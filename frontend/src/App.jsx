@@ -5,6 +5,9 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./components/Cart";
 import Checkout from "./pages/Checkout";
+import Login from './components/Login';
+import Register from './components/Register';
+
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -65,6 +68,9 @@ function App() {
         } />
         <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
       </Route>
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }
