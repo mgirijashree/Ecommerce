@@ -8,6 +8,23 @@ from django.shortcuts import render
 from .models import Product,Category
 
 
+def home(request):
+    return HttpResponse("""
+    <h1>E-Commerce Website</h1>
+    <h2>Deployment Successful ✅</h2>
+
+    <hr>
+
+    <h3>Available Pages</h3>
+
+    <ul>
+        <li><a href="/products/">Products API</a></li>
+        <li><a href="/categories/">Categories API</a></li>
+        <li><a href="/admin/">Admin Panel</a></li>
+    </ul>
+    """)
+
+
 def product_list(request):
 
     category_id = request.GET.get("category")
