@@ -41,8 +41,7 @@ export default function Products({
     // Fetch Products
     useEffect(() => {
         setLoading(true);
-        let url = selectedCategory ? `products/?category=${selectedCategory}` : "products/";
-        
+       let url = selectedCategory ? `/products/?category=${selectedCategory}` : "/products/";
         api.get(url)
             .then((response) => {
                 const data = response.data.products || response.data;

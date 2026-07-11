@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-h!g8uqs4v^bm$nb4ey^k=mls-66xu^ko7(secf8q!=1i_i_4vm
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'ecommerce-7jru.onrender.com',
+    'https://ecommerce-7jru.onrender.com/',
     'localhost',
     ".onrender.com",
 ]
@@ -159,7 +159,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://ecommerce-7jru.onrender.com",
+    "https://ecommerce-frontend.onrender.com",
 ]
 
 
