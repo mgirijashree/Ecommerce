@@ -15,17 +15,17 @@ export default function Products({
     increaseQuantity,
     decreaseQuantity,
     removeItem,
-    searchTerm, 
+    searchTerm,
     setSearchTerm,
 }) {
     const navigate = useNavigate();
     const [showCartModal, setShowCartModal] = useState(false);
-    
+
     // Original data from API
     const [products, setProducts] = useState([]);
     // State to hold results after filtering
     const [filteredProducts, setFilteredProducts] = useState([]);
-    
+
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [loading, setLoading] = useState(true);
@@ -41,31 +41,47 @@ export default function Products({
     // Fetch Products
     useEffect(() => {
         setLoading(true);
-       let url = selectedCategory ? `/products/?category=${selectedCategory}` : "/products/";
+
+        const url = selectedCategory
+            ? `/products/?category=${selectedCategory}`
+            : "/products/";
+
         api.get(url)
             .then((response) => {
-                const data = response.data.products || response.data;
+
+                console.log("Products API Response:", response.data);
+
+                const data = Array.isArray(response.data)
+                    ? response.data
+                    : response.data.products || [];
+
                 setProducts(data);
-                setFilteredProducts(data); // Initialize filtered list
+                setFilteredProducts(data);
+
                 setLoading(false);
             })
             .catch((error) => {
-                setError("Unable to load products.");
+
+                console.error(error);
+
+                setError(error.message);
+
                 setLoading(false);
             });
+
     }, [selectedCategory]);
 
     // Debounced Search Logic (Requirements 4, 5, 8, 9, 10)
     useEffect(() => {
         const handler = setTimeout(() => {
             const lowerTerm = searchTerm.toLowerCase();
-            
+
             const results = products.filter((product) => {
                 const nameMatch = product.name?.toLowerCase().includes(lowerTerm);
                 const descMatch = product.description?.toLowerCase().includes(lowerTerm);
                 return nameMatch || descMatch;
             });
-            
+
             setFilteredProducts(results);
         }, 500); // 500ms debounce delay
 
