@@ -60,7 +60,7 @@ def category_list(request):
 
 
 @csrf_exempt
-def register(request):
+def register_view(request):
 
     if request.method != "POST":
         return JsonResponse({"success": False})
@@ -90,7 +90,7 @@ def register(request):
 
 
 @csrf_exempt
-def login_user(request):
+def login_view(request):
 
     if request.method != "POST":
         return JsonResponse({"success": False})
