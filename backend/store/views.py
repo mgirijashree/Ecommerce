@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 import json
 from django.shortcuts import render
 from .models import Product,Category
-
+from django.http import JsonResponse, HttpResponse
 
 def home(request):
     return HttpResponse("""
@@ -31,34 +31,33 @@ def product_list(request):
 
     products = Product.objects.all()
 
-
     if category_id:
-        products = products.filter(
-            category_id=category_id
-        )
-
+        products = products.filter(category_id=category_id)
 
     data = []
 
     for product in products:
 
-        data.append({
+        image = ""
 
+        try:
+            if product.image:
+                image = product.image.url
+        except:
+            image = ""
+
+        data.append({
             "id": product.id,
             "name": product.name,
             "description": product.description,
-            "price": product.price,
+            "price": float(product.price),
             "stock": product.stock,
-            "image": product.image.url if product.image else "",
+            "image": image,
             "category": product.category.id,
-            "category_name": product.category.name
-
+            "category_name": product.category.name,
         })
 
-
-    return JsonResponse({
-        "products": data
-    })
+    return JsonResponse({"products": data})
 
 
 def category_list(request):

@@ -27,8 +27,10 @@ class Product(models.Model):
     )
 
     image = models.ImageField(
-        upload_to="products/"
-    )
+    upload_to="products/",
+    blank=True,
+    null=True,
+)
 
     stock = models.PositiveIntegerField(default=0)
 
