@@ -40,6 +40,37 @@ def product_list(request):
         image = ""
 
         if product.image:
+            image = f"https://ecommerce-7jru.onrender.com{product.image.url}"
+
+        data.append({
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "price": float(product.price),
+            "stock": product.stock,
+            "image": image,
+            "category": product.category.id,
+            "category_name": product.category.name,
+        })
+
+    return JsonResponse({
+        "products": data
+    })
+
+    category_id = request.GET.get("category")
+
+    products = Product.objects.all()
+
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    data = []
+
+    for product in products:
+
+        image = ""
+
+        if product.image:
             if product.image:
                 if request.get_host() == "ecommerce-7jru.onrender.com":
                     image = f"https://ecommerce-7jru.onrender.com{product.image.url}"
