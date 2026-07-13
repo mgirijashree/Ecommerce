@@ -44,7 +44,7 @@ function App() {
         />
       }>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={
+        <Route path="/products/" element={
           <Products
             cartItems={cartItems}
             onAddToCart={handleAddToCart}
@@ -57,7 +57,7 @@ function App() {
             setSearchTerm={setSearchTerm}
           />
         } />
-        <Route path="/cart" element={
+        <Route path="/cart/" element={
           <Cart
             cartItems={cartItems}
             increaseQuantity={increaseQuantity}
@@ -66,11 +66,11 @@ function App() {
             onCheckout={() => alert("Proceed to Checkout")}
           />
         } />
-        <Route path="/checkout" element={<Checkout cartItems={cartItems} />} />
+        <Route path="/checkout/" element={<Checkout cartItems={cartItems} />} />
       </Route>
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/login/" element={<Login />} />
+      <Route path="/register/" element={<Register />} />
     </Routes>
   );
 }
