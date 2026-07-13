@@ -5,11 +5,9 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./components/Cart";
 import Checkout from "./pages/Checkout";
-import Login from './components/Login';
-import Register from './components/Register';
-import { useNavigate } from "react-router-dom";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
-const navigate = useNavigate();
 
 
 
