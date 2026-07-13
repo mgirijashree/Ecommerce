@@ -7,11 +7,7 @@ export default function ProductCard({ product, onAddToCart }) {
       {/* Container for image to handle overflow and scale effect */}
       <div className="overflow-hidden">
         <img
-          src={
-            product.image?.startsWith("http")
-              ? product.image
-              : `https://ecommerce-7jru.onrender.com${product.image}`
-          }
+          src={`https://ecommerce-7jru.onrender.com/media/${product.image}`}
           alt={product.name}
         />
       </div>

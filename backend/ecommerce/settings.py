@@ -46,8 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'store',
+
+    "cloudinary",
+    "cloudinary_storage",
     
 ]
+
+DEFAULT_FILE_STORAGE = (
+    "cloudinary_storage.storage.MediaCloudinaryStorage"
+)
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -146,9 +153,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-MEDIA_URL = "/media/"
-
 MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 
 
 
@@ -164,7 +170,11 @@ CORS_ALLOWED_ORIGINS = [
 
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
