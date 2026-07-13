@@ -172,33 +172,48 @@ def category_list(request):
 
 
 @csrf_exempt
-def register_view(request):
+def register_user(request):
 
-    if request.method != "POST":
-        return JsonResponse({"success": False})
+    if request.method == "POST":
 
-    data = json.loads(request.body)
+        data = json.loads(request.body)
 
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
 
-    if User.objects.filter(username=username).exists():
-        return JsonResponse({
-            "success": False,
-            "message": "Username already exists"
-        })
 
-    User.objects.create_user(
-        username=username,
-        email=email,
-        password=password
+        if User.objects.filter(username=username).exists():
+
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Username already exists"
+                },
+                status=400
+            )
+
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Registration successful"
+            }
+        )
+
+
+    return JsonResponse(
+        {
+            "message":"Only POST allowed"
+        }
     )
-
-    return JsonResponse({
-        "success": True,
-        "message": "Registration Successful"
-    })
 
 
 @csrf_exempt
