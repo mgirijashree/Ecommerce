@@ -168,7 +168,6 @@ def register_user(request):
         }
     )
 
-
 @csrf_exempt
 def login_user(request):
 
@@ -201,7 +200,6 @@ def login_user(request):
     return JsonResponse({
         "message": "Only POST allowed"
     })
-
 
 def logout_user(request):
 

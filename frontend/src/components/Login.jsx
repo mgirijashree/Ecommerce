@@ -74,62 +74,62 @@ export default function Login() {
 
   const handleLogin = async (e) => {
 
-  e.preventDefault();
+    e.preventDefault();
 
-  const validationErrors = validate();
+    const validationErrors = validate();
 
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  try {
+    try {
 
-    const response = await api.post("login/", form);
+      const response = await api.post("login/", form);
 
-    console.log("Login Response:", response.data);
+      console.log("Login Response:", response.data);
 
-    if (response.data.success) {
+      if (response.data.success) {
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          username: response.data.username,
-          address: response.data.address,
-        })
-      );
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.data.username,
+            address: response.data.address,
+          })
+        );
 
-      setShowSuccessModal(true);
+        setShowSuccessModal(true);
 
-      setTimeout(() => {
-        setShowSuccessModal(false);
-        navigate("/products");
-      }, 5000);
+        setTimeout(() => {
+          setShowSuccessModal(false);
+          navigate("/products");
+        }, 5000);
 
-    } else {
+      } else {
+
+        setServerError(
+          response.data.message || "Invalid username or password"
+        );
+
+      }
+
+    } catch (error) {
 
       setServerError(
-        response.data.message || "Invalid username or password"
+        error.response?.data?.message ||
+        "Invalid username or password"
       );
 
     }
 
-  } catch (error) {
-
-    setServerError(
-      error.response?.data?.message ||
-      "Invalid username or password"
-    );
-
-  }
-
-};
+  };
 
 
-return (
+  return (
 
-  <div
-    className="
+    <div
+      className="
             min-h-screen
             flex
             items-center
@@ -137,14 +137,14 @@ return (
             bg-gray-100
             px-4
         "
-  >
+    >
 
 
-    <form
+      <form
 
-      onSubmit={handleLogin}
+        onSubmit={handleLogin}
 
-      className="
+        className="
             bg-white
             shadow-xl
             rounded-xl
@@ -153,61 +153,61 @@ return (
             max-w-md
         "
 
-    >
+      >
 
 
-      <h1
-        className="
+        <h1
+          className="
             text-3xl
             font-bold
             text-center
             mb-6
         "
-      >
-        Login
-      </h1>
+        >
+          Login
+        </h1>
 
 
 
-      {/* Server Error */}
+        {/* Server Error */}
 
-      {
-        serverError &&
+        {
+          serverError &&
 
-        <p
-          className="
+          <p
+            className="
                 text-red-600
                 text-sm
                 mb-4
                 text-center
             "
-        >
-          {serverError}
-        </p>
-      }
+          >
+            {serverError}
+          </p>
+        }
 
 
 
-      {/* Username */}
+        {/* Username */}
 
-      <label className="block mb-2 font-medium">
-        Username
-      </label>
+        <label className="block mb-2 font-medium">
+          Username
+        </label>
 
 
-      <input
+        <input
 
-        type="text"
+          type="text"
 
-        name="username"
+          name="username"
 
-        value={form.username}
+          value={form.username}
 
-        onChange={handleChange}
+          onChange={handleChange}
 
-        placeholder="Enter username"
+          placeholder="Enter username"
 
-        className={`
+          className={`
             w-full
             border
             rounded-lg
@@ -215,52 +215,52 @@ return (
             mb-1
 
             ${errors.username
-            ?
-            "border-red-500"
-            :
-            "border-gray-300"
-          }
+              ?
+              "border-red-500"
+              :
+              "border-gray-300"
+            }
         `}
 
-      />
+        />
 
 
-      {
-        errors.username &&
+        {
+          errors.username &&
 
-        <p
-          className="
+          <p
+            className="
                 text-red-500
                 text-sm
                 mb-4
             "
-        >
-          {errors.username}
-        </p>
-      }
+          >
+            {errors.username}
+          </p>
+        }
 
 
 
-      {/* Password */}
+        {/* Password */}
 
-      <label className="block mb-2 font-medium">
-        Password
-      </label>
+        <label className="block mb-2 font-medium">
+          Password
+        </label>
 
 
-      <input
+        <input
 
-        type="password"
+          type="password"
 
-        name="password"
+          name="password"
 
-        value={form.password}
+          value={form.password}
 
-        onChange={handleChange}
+          onChange={handleChange}
 
-        placeholder="Enter password"
+          placeholder="Enter password"
 
-        className={`
+          className={`
             w-full
             border
             rounded-lg
@@ -268,38 +268,38 @@ return (
             mb-1
 
             ${errors.password
-            ?
-            "border-red-500"
-            :
-            "border-gray-300"
-          }
+              ?
+              "border-red-500"
+              :
+              "border-gray-300"
+            }
         `}
 
-      />
+        />
 
 
-      {
-        errors.password &&
+        {
+          errors.password &&
 
-        <p
-          className="
+          <p
+            className="
                 text-red-500
                 text-sm
                 mb-4
             "
-        >
-          {errors.password}
-        </p>
-      }
+          >
+            {errors.password}
+          </p>
+        }
 
 
 
 
-      <button
+        <button
 
-        type="submit"
+          type="submit"
 
-        className="
+          className="
             w-full
             bg-blue-600
             text-white
@@ -309,76 +309,76 @@ return (
             transition
         "
 
-      >
+        >
 
-        Login
+          Login
 
-      </button>
+        </button>
 
 
 
-      <p
-        className="
+        <p
+          className="
             text-center
             mt-5
         "
-      >
+        >
 
-        Don't have an account?
+          Don't have an account?
 
-        <button
+          <button
 
-          type="button"
+            type="button"
 
-          onClick={() => navigate("/register")}
+            onClick={() => navigate("/register")}
 
-          className="
+            className="
             text-blue-600
             ml-2
         "
 
-        >
-          Register
-        </button>
+          >
+            Register
+          </button>
 
 
-      </p>
+        </p>
 
 
 
-    </form>
+      </form>
 
-    {showSuccessModal && (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl shadow-xl p-8 w-[90%] max-w-md text-center animate-fade-in">
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-8 w-[90%] max-w-md text-center animate-fade-in">
 
-          <div className="text-6xl mb-4">🎉</div>
+            <div className="text-6xl mb-4">🎉</div>
 
-          <h2 className="text-2xl font-bold text-green-600 mb-2">
-            Login Successful
-          </h2>
+            <h2 className="text-2xl font-bold text-green-600 mb-2">
+              Login Successful
+            </h2>
 
-          <p className="text-gray-600 mb-4">
-            Welcome back!
-          </p>
+            <p className="text-gray-600 mb-4">
+              Welcome back!
+            </p>
 
-          <p className="text-gray-500">
-            Redirecting to Products page...
-          </p>
+            <p className="text-gray-500">
+              Redirecting to Products page...
+            </p>
 
-          <div className="mt-6 w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-green-600 h-2 rounded-full animate-[progress_5s_linear]"
-              style={{ width: "100%" }}
-            ></div>
+            <div className="mt-6 w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-green-600 h-2 rounded-full animate-[progress_5s_linear]"
+                style={{ width: "100%" }}
+              ></div>
+            </div>
+
           </div>
-
         </div>
-      </div>
-    )}
+      )}
 
-  </div>
+    </div>
 
-);
+  );
 
 }
