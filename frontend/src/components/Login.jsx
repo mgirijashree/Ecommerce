@@ -133,12 +133,20 @@ export default function Login() {
     }
     catch (error) {
 
-      setServerError(
-        error.response?.data?.message ||
-        "Invalid username or password"
-      );
+    if (error.response?.data?.errors) {
+
+        setErrors(error.response.data.errors);
+
+    } else {
+
+        setServerError(
+            error.response?.data?.message ||
+            "Registration failed"
+        );
 
     }
+
+}
 
   };
 
