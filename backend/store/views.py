@@ -202,35 +202,45 @@ def register_view(request):
 
 
 @csrf_exempt
-def login_view(request):
+def login_user(request):
 
-    if request.method != "POST":
-        return JsonResponse({"success": False})
+    if request.method == "POST":
 
-    data = json.loads(request.body)
+        data = json.loads(request.body)
 
-    username = data.get("username")
-    password = data.get("password")
+        username = data.get("username")
+        password = data.get("password")
 
-    user = authenticate(
-        username=username,
-        password=password
-    )
 
-    if user is None:
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
 
-        return JsonResponse({
-            "success": False,
-            "message": "Invalid Username or Password"
-        })
 
-    login(request, user)
+        if user is not None:
+
+            login(request, user)
+
+            return JsonResponse({
+                "success": True,
+                "message": "Login successful",
+                "username": user.username
+            })
+
+
+        else:
+
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid username or password"
+            }, status=401)
+
 
     return JsonResponse({
-        "success": True,
-        "username": user.username
+        "message":"Only POST allowed"
     })
-
 
 def logout_user(request):
 
