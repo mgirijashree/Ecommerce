@@ -49,7 +49,14 @@ export default function Header({
 
 
       {/* Global Search */}
-      <div className="flex-1">
+      <div
+        className="
+    w-32
+    sm:w-48
+    md:w-64
+    lg:w-80
+  "
+      >
 
         <input
           type="text"
@@ -66,7 +73,9 @@ export default function Header({
             px-3
             py-2
             text-sm
-            sm:text-base
+            focus:outline-none
+            focus:ring-2
+            focus:ring-blue-500
           "
         />
 
