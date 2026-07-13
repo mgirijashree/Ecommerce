@@ -181,8 +181,10 @@ def register_user(request):
         username = data.get("username")
         email = data.get("email")
         password = data.get("password")
+        address = data.get("address")
 
 
+        # Check existing user
         if User.objects.filter(username=username).exists():
 
             return JsonResponse(
@@ -194,10 +196,18 @@ def register_user(request):
             )
 
 
+        # Create User
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password
+        )
+
+
+        # Create Profile with Address
+        UserProfile.objects.create(
+            user=user,
+            address=address
         )
 
 
@@ -211,13 +221,53 @@ def register_user(request):
 
     return JsonResponse(
         {
-            "message":"Only POST allowed"
+            "message": "POST request required"
         }
     )
 
 
 @csrf_exempt
 def login_user(request):
+
+    if request.method=="POST":
+
+        data=json.loads(request.body)
+
+
+        user = authenticate(
+            username=data.get("username"),
+            password=data.get("password")
+        )
+
+
+        if user:
+
+            login(request,user)
+
+
+            profile = UserProfile.objects.get(
+                user=user
+            )
+
+
+            return JsonResponse({
+
+                "success": True,
+
+                "username": user.username,
+
+                "address": profile.address
+
+            })
+
+
+        return JsonResponse(
+            {
+                "success":False,
+                "message":"Invalid username or password"
+            },
+            status=401
+        )
 
     if request.method == "POST":
 

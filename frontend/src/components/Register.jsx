@@ -24,7 +24,7 @@ export default function Register(){
 
     const [success,setSuccess] = useState("");
 
-
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     const handleChange=(e)=>{
 
@@ -132,7 +132,11 @@ export default function Register(){
 
             setTimeout(() => {
 
-                navigate("/login");
+                if (response.data.success) {
+
+    setShowSuccessModal(true);
+
+}
 
             }, 1500);
 
@@ -437,6 +441,36 @@ export default function Register(){
     </form>
 
 
+
+{showSuccessModal && (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+        <div className="bg-white rounded-xl shadow-xl p-8 w-96 text-center">
+
+            <div className="text-6xl mb-4">✅</div>
+
+            <h2 className="text-2xl font-bold mb-2">
+                Registration Successful
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+                Your account has been created successfully.
+            </p>
+
+            <button
+                onClick={() => {
+                    setShowSuccessModal(false);
+                    navigate("/login");
+                }}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+            >
+                Go to Login
+            </button>
+
+        </div>
+
+    </div>
+)}
     </div>
 
     );
