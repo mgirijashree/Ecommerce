@@ -1,47 +1,53 @@
 export default function ProductCard({ product, onAddToCart }) {
+
+  const imageUrl = product.image
+    ? `http://127.0.0.1:8000${product.image}`
+    : "/no-image.png";
+
   return (
     <div className="
-      bg-white 
-      rounded-xl 
-      shadow-md 
+      bg-white
+      rounded-xl
+      shadow-md
       overflow-hidden
       border
       border-gray-200
-      transition-all
+      transition
       duration-300
-      hover:shadow-2xl
-      hover:-translate-y-2
+      hover:shadow-xl
+      hover:-translate-y-1
     ">
 
       <img
-        src={`http://127.0.0.1:8000${product.image}`}
+        src={imageUrl}
         alt={product.name}
         className="
           w-full
-          h-56
+          h-48
+          sm:h-56
+          md:h-64
           object-cover
         "
       />
 
-      <div className="p-5">
+      <div className="p-4">
 
-        <h3 className="
-          text-xl
-          font-bold
+        <h2 className="
+          text-lg
+          sm:text-xl
+          font-semibold
           text-gray-800
         ">
           {product.name}
-        </h3>
+        </h2>
 
         <p className="
           text-green-600
           font-bold
-          text-lg
           mt-2
         ">
-          ₹ {product.price}
+          ₹{product.price}
         </p>
-
 
         <button
           onClick={() => onAddToCart(product)}
@@ -53,10 +59,9 @@ export default function ProductCard({ product, onAddToCart }) {
             py-2
             rounded-lg
             hover:bg-blue-700
-            transition
           "
         >
-          Add to Cart
+          Add To Cart
         </button>
 
       </div>
