@@ -5,136 +5,149 @@ import api from "../services/api";
 
 export default function Login() {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
-    const [form, setForm] = useState({
-        username: "",
-        password: ""
+  const [form, setForm] = useState({
+    username: "",
+    password: ""
+  });
+
+
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleChange = (e) => {
+
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
     });
 
 
-    const [errors, setErrors] = useState({});
-    const [serverError, setServerError] = useState("");
+    // remove field error while typing
+    setErrors({
+      ...errors,
+      [e.target.name]: ""
+    });
+
+    setServerError("");
+
+  };
 
 
 
-    const handleChange = (e) => {
+  const validate = () => {
 
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
+    let newErrors = {};
 
 
-        // remove field error while typing
-        setErrors({
-            ...errors,
-            [e.target.name]: ""
-        });
+    if (!form.username.trim()) {
 
-        setServerError("");
+      newErrors.username =
+        "Username is required";
 
-    };
+    }
 
 
+    if (!form.password.trim()) {
 
-    const validate = () => {
+      newErrors.password =
+        "Password is required";
 
-        let newErrors = {};
+    }
+    else if (form.password.length < 6) {
 
+      newErrors.password =
+        "Password must contain minimum 6 characters";
 
-        if (!form.username.trim()) {
-
-            newErrors.username =
-                "Username is required";
-
-        }
-
-
-        if (!form.password.trim()) {
-
-            newErrors.password =
-                "Password is required";
-
-        }
-        else if (form.password.length < 6) {
-
-            newErrors.password =
-                "Password must contain minimum 6 characters";
-
-        }
+    }
 
 
-        return newErrors;
+    return newErrors;
 
-    };
+  };
 
 
 
-    const handleLogin = async (e) => {
+  const handleLogin = async (e) => {
 
-        e.preventDefault();
-
-
-        const validationErrors = validate();
+    e.preventDefault();
 
 
-        if (Object.keys(validationErrors).length > 0) {
-
-            setErrors(validationErrors);
-            return;
-
-        }
+    const validationErrors = validate();
 
 
+    if (Object.keys(validationErrors).length > 0) {
 
-        try {
+      setErrors(validationErrors);
+      return;
 
-            const response = await api.post(
-                "login/",
-                form
-            );
-
-
-            if (response.data.success) {
-
-
-                localStorage.setItem(
-                  "user",
-                  JSON.stringify({
-
-                      username: response.data.username,
-
-                      address: response.data.address
-
-                  })
-              );
-
-
-                navigate("/products");
-
-            }
-
-
-        }
-        catch (error) {
-
-            setServerError(
-                error.response?.data?.message ||
-                "Invalid username or password"
-            );
-
-        }
-
-    };
+    }
 
 
 
-    return (
+    try {
 
-        <div
-        className="
+      const response = await api.post(
+        "login/",
+        form
+      );
+
+
+      if (response.data.success) {
+
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+
+            username: response.data.username,
+
+            address: response.data.address
+
+          })
+        );
+
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.data.username,
+            address: response.data.address,
+          })
+        );
+
+        setShowSuccessModal(true);
+
+        setTimeout(() => {
+          setShowSuccessModal(false);
+          navigate("/products");
+        }, 5000);
+
+      }
+
+
+    }
+    catch (error) {
+
+      setServerError(
+        error.response?.data?.message ||
+        "Invalid username or password"
+      );
+
+    }
+
+  };
+
+
+
+  return (
+
+    <div
+      className="
             min-h-screen
             flex
             items-center
@@ -142,10 +155,10 @@ export default function Login() {
             bg-gray-100
             px-4
         "
-        >
+    >
 
 
-        <form
+      <form
 
         onSubmit={handleLogin}
 
@@ -158,18 +171,18 @@ export default function Login() {
             max-w-md
         "
 
-        >
+      >
 
 
         <h1
-        className="
+          className="
             text-3xl
             font-bold
             text-center
             mb-6
         "
         >
-            Login
+          Login
         </h1>
 
 
@@ -177,18 +190,18 @@ export default function Login() {
         {/* Server Error */}
 
         {
-            serverError &&
+          serverError &&
 
-            <p
+          <p
             className="
                 text-red-600
                 text-sm
                 mb-4
                 text-center
             "
-            >
-                {serverError}
-            </p>
+          >
+            {serverError}
+          </p>
         }
 
 
@@ -196,35 +209,34 @@ export default function Login() {
         {/* Username */}
 
         <label className="block mb-2 font-medium">
-            Username
+          Username
         </label>
 
 
         <input
 
-        type="text"
+          type="text"
 
-        name="username"
+          name="username"
 
-        value={form.username}
+          value={form.username}
 
-        onChange={handleChange}
+          onChange={handleChange}
 
-        placeholder="Enter username"
+          placeholder="Enter username"
 
-        className={`
+          className={`
             w-full
             border
             rounded-lg
             p-3
             mb-1
 
-            ${
-                errors.username
-                ?
-                "border-red-500"
-                :
-                "border-gray-300"
+            ${errors.username
+              ?
+              "border-red-500"
+              :
+              "border-gray-300"
             }
         `}
 
@@ -232,17 +244,17 @@ export default function Login() {
 
 
         {
-            errors.username &&
+          errors.username &&
 
-            <p
+          <p
             className="
                 text-red-500
                 text-sm
                 mb-4
             "
-            >
-                {errors.username}
-            </p>
+          >
+            {errors.username}
+          </p>
         }
 
 
@@ -250,35 +262,34 @@ export default function Login() {
         {/* Password */}
 
         <label className="block mb-2 font-medium">
-            Password
+          Password
         </label>
 
 
         <input
 
-        type="password"
+          type="password"
 
-        name="password"
+          name="password"
 
-        value={form.password}
+          value={form.password}
 
-        onChange={handleChange}
+          onChange={handleChange}
 
-        placeholder="Enter password"
+          placeholder="Enter password"
 
-        className={`
+          className={`
             w-full
             border
             rounded-lg
             p-3
             mb-1
 
-            ${
-                errors.password
-                ?
-                "border-red-500"
-                :
-                "border-gray-300"
+            ${errors.password
+              ?
+              "border-red-500"
+              :
+              "border-gray-300"
             }
         `}
 
@@ -286,17 +297,17 @@ export default function Login() {
 
 
         {
-            errors.password &&
+          errors.password &&
 
-            <p
+          <p
             className="
                 text-red-500
                 text-sm
                 mb-4
             "
-            >
-                {errors.password}
-            </p>
+          >
+            {errors.password}
+          </p>
         }
 
 
@@ -304,9 +315,9 @@ export default function Login() {
 
         <button
 
-        type="submit"
+          type="submit"
 
-        className="
+          className="
             w-full
             bg-blue-600
             text-white
@@ -318,46 +329,74 @@ export default function Login() {
 
         >
 
-            Login
+          Login
 
         </button>
 
 
 
         <p
-        className="
+          className="
             text-center
             mt-5
         "
         >
 
-        Don't have an account?
+          Don't have an account?
 
-        <button
+          <button
 
-        type="button"
+            type="button"
 
-        onClick={() => navigate("/register")}
+            onClick={() => navigate("/register")}
 
-        className="
+            className="
             text-blue-600
             ml-2
         "
 
-        >
+          >
             Register
-        </button>
+          </button>
 
 
         </p>
 
 
 
-        </form>
+      </form>
 
+      {showSuccessModal && (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl shadow-xl p-8 w-[90%] max-w-md text-center animate-fade-in">
+
+            <div className="text-6xl mb-4">🎉</div>
+
+            <h2 className="text-2xl font-bold text-green-600 mb-2">
+                Login Successful
+            </h2>
+
+            <p className="text-gray-600 mb-4">
+                Welcome back!
+            </p>
+
+            <p className="text-gray-500">
+                Redirecting to Products page...
+            </p>
+
+            <div className="mt-6 w-full bg-gray-200 rounded-full h-2">
+                <div
+                    className="bg-green-600 h-2 rounded-full animate-[progress_5s_linear]"
+                    style={{ width: "100%" }}
+                ></div>
+            </div>
 
         </div>
+    </div>
+)}
 
-    );
+    </div>
+
+  );
 
 }
