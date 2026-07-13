@@ -101,9 +101,15 @@ export default function Login() {
 
 
                 localStorage.setItem(
-                    "user",
-                    response.data.username
-                );
+                  "user",
+                  JSON.stringify({
+
+                      username: response.data.username,
+
+                      address: response.data.address
+
+                  })
+              );
 
 
                 navigate("/products");

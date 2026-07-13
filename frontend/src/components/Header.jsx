@@ -10,6 +10,10 @@ export default function Header({
 
   const navigate = useNavigate();
 
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
   return (
     <header
       className="
@@ -103,6 +107,29 @@ export default function Header({
       >
         Login
       </button>
+
+
+      {
+        user && (
+
+          <div className="
+            hidden
+            md:block
+            text-sm
+            ">
+
+            <p className="font-bold">
+              Welcome, {user.username}
+            </p>
+
+            <p className="text-gray-500">
+              {user.address}
+            </p>
+
+          </div>
+
+        )
+      }
 
 
       {/* Cart */}

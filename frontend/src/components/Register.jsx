@@ -9,10 +9,12 @@ export default function Register(){
 
 
     const [form,setForm] = useState({
-        username:"",
-        email:"",
-        password:"",
-        confirmPassword:""
+
+    username:"",
+    email:"",
+    password:"",
+    address:""
+
     });
 
 
@@ -360,6 +362,28 @@ export default function Register(){
     </p>
 
     }
+
+
+
+    <textarea
+
+        name="address"
+
+        placeholder="Enter your address"
+
+        value={form.address}
+
+        onChange={handleChange}
+
+        className="
+        w-full
+        border
+        rounded-lg
+        p-3
+        mb-4
+        "
+
+        ></textarea>
 
 
 
