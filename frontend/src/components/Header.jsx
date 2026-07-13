@@ -55,21 +55,11 @@ export default function Header({
           type="text"
           placeholder="Search products..."
           value={searchTerm}
-          onChange={(e)=>setSearchTerm(e.target.value)}
-          className="
-            w-full
-            border
-            border-gray-300
-            rounded-lg
-            px-3
-            py-2
-            text-sm
-            sm:text-base
-            focus:outline-none
-            focus:ring-2
-            focus:ring-green-500
-          "
-        />
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            navigate("/products");
+          }}
+          className="w-full border rounded-lg px-3 py-2 " />
 
       </div>
 
@@ -80,10 +70,10 @@ export default function Header({
           relative
           shrink-0
         "
-        onClick={()=>navigate("/cart")}
+        onClick={() => navigate("/cart")}
       >
 
-        <ShoppingCart size={26}/>
+        <ShoppingCart size={26} />
 
         <span
           className="
