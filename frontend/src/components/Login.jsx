@@ -74,52 +74,22 @@ export default function Login() {
 
   const handleLogin = async (e) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
+  const validationErrors = validate();
 
-    const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
 
+  try {
 
-    if (Object.keys(validationErrors).length > 0) {
+    const response = await api.post("login/", form);
 
-      setErrors(validationErrors);
-      return;
+    console.log("Login Response:", response.data);
 
-    }
-
-
-
-    try {
-
-      const response = await api.post("login/", form);
-
-      console.log("Login Response:", response.data);
-
-
-      console.log(response.data);
-
-      if (response.data.success === true) {
-
-        console.log("Inside success block");
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: response.data.username,
-            address: response.data.address,
-          })
-        );
-
-        setShowSuccessModal(true);
-
-        setTimeout(() => {
-          console.log("Navigating...");
-          navigate("/products");
-        }, 5000);
-
-      } else {
-        console.log("Login not successful");
-      }
+    if (response.data.success) {
 
       localStorage.setItem(
         "user",
@@ -135,11 +105,16 @@ export default function Login() {
         setShowSuccessModal(false);
         navigate("/products");
       }, 5000);
+
+    } else {
+
+      setServerError(
+        response.data.message || "Invalid username or password"
+      );
+
     }
 
-
-    }
-    catch (error) {
+  } catch (error) {
 
     setServerError(
       error.response?.data?.message ||
@@ -149,7 +124,6 @@ export default function Login() {
   }
 
 };
-
 
 
 return (
