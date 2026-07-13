@@ -89,76 +89,129 @@ export default function Products({
     }, [searchTerm, products]);
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                <h1 className="text-4xl font-bold mb-6">Our Jewelry Collection</h1>
+    <div className="min-h-screen bg-gray-100">
 
-                <input
-                    type="text"
-                    placeholder="Search Products..."
-                    className="w-full border rounded-lg p-3 mb-6"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+        <div className="
+            max-w-7xl 
+            mx-auto 
+            px-4 
+            sm:px-6 
+            lg:px-8 
+            py-6
+        ">
 
-                <CategoryFilter
-                    categories={categories}
-                    selected={selectedCategory}
-                    setSelected={setSelectedCategory}
-                />
+            <h1 className="
+                text-2xl 
+                sm:text-3xl 
+                lg:text-4xl 
+                font-bold 
+                mb-6
+                text-gray-800
+            ">
+                Our Jewelry Collection
+            </h1>
 
-                {loading && <div className="text-center text-xl mt-10">Loading Products...</div>}
-                {error && <div className="text-red-600 text-center mt-5">{error}</div>}
 
-                {!loading && (
-                    <>
-                        {/* Requirement 7: No Results Message */}
-                        {filteredProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 mt-8">
-                                {filteredProducts.map((product) => (
-                                    <ProductCard
-                                        key={product.id}
-                                        product={product}
-                                        onAddToCart={(product) => {
-                                            onAddToCart(product);
-                                            setShowCartModal(true);
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-10 text-xl text-gray-600">
-                                No products found.
-                            </div>
-                        )}
+            <input
+                type="text"
+                placeholder="Search Products..."
+                className="
+                    w-full
+                    border
+                    rounded-lg
+                    p-3
+                    mb-6
+                    text-sm
+                    sm:text-base
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-blue-400
+                "
+                value={searchTerm}
+                onChange={(e)=>setSearchTerm(e.target.value)}
+            />
 
-                        <CartSuccessModal
-                            show={showCartModal}
-                            onClose={() => setShowCartModal(false)}
-                            onGoToCart={() => {
-                                setShowCartModal(false);
-                                navigate("/cart");
-                            }}
-                        />
 
-                        {filteredProducts.length > 0 && products.slice(0, 4).length > 0 && (
-                            <div className="mt-12">
-                                <Recommendations products={products.slice(0, 4)} />
-                            </div>
-                        )}
-                    </>
-                )}
+            <CategoryFilter
+                categories={categories}
+                selected={selectedCategory}
+                setSelected={setSelectedCategory}
+            />
 
-                {isCartOpen && (
-                    <Cart
-                        cartItems={cartItems}
-                        increaseQuantity={increaseQuantity}
-                        decreaseQuantity={decreaseQuantity}
-                        removeItem={removeItem}
-                        onCheckout={() => alert("Proceed to Checkout")}
+
+            {loading && (
+                <div className="text-center text-xl mt-10">
+                    Loading Products...
+                </div>
+            )}
+
+
+            {error && (
+                <div className="text-red-600 text-center mt-5">
+                    {error}
+                </div>
+            )}
+
+
+
+            {!loading && filteredProducts.length > 0 && (
+
+                <div
+                className="
+                    grid
+                    grid-cols-1
+                    xs:grid-cols-2
+                    sm:grid-cols-2
+                    md:grid-cols-3
+                    lg:grid-cols-4
+                    gap-5
+                    sm:gap-6
+                    mt-8
+                "
+                >
+
+                {filteredProducts.map((product)=>(
+                    <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAddToCart={(product)=>{
+                            onAddToCart(product);
+                            setShowCartModal(true);
+                        }}
                     />
-                )}
-            </div>
+                ))}
+
+                </div>
+
+            )}
+
+
+
+            {!loading && filteredProducts.length === 0 && (
+
+                <div className="
+                    text-center
+                    py-10
+                    text-lg
+                    text-gray-600
+                ">
+                    No products found.
+                </div>
+
+            )}
+
+
+            <CartSuccessModal
+                show={showCartModal}
+                onClose={()=>setShowCartModal(false)}
+                onGoToCart={()=>{
+                    setShowCartModal(false);
+                    navigate("/cart");
+                }}
+            />
+
         </div>
-    );
+
+    </div>
+);
 }
