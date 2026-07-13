@@ -3,162 +3,125 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 
-export default function Register(){
+export default function Register() {
 
     const navigate = useNavigate();
 
 
-    const [form,setForm] = useState({
-
-    username:"",
-    email:"",
-    password:"",
-    address:""
-
+    const [form, setForm] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        address: ""
     });
 
 
-    const [errors,setErrors] = useState({});
+    const [errors, setErrors] = useState({});
 
-    const [serverError,setServerError] = useState("");
+    const [serverError, setServerError] = useState("");
 
-    const [success,setSuccess] = useState("");
+    const [success, setSuccess] = useState("");
 
     const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-    const handleChange=(e)=>{
+    const handleChange = (e) => {
 
         setForm({
             ...form,
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         });
 
 
         // remove field error while typing
         setErrors({
             ...errors,
-            [e.target.name]:""
+            [e.target.name]: ""
         });
 
     };
 
 
 
-    const validate = ()=>{
+    const validate = () => {
 
-        let newErrors={};
+        let newErrors = {};
 
-
-        if(!form.username.trim()){
-
-            newErrors.username=
-            "Username is required";
-
+        if (!form.username.trim()) {
+            newErrors.username = "Username is required";
+        } else if (form.username.length < 3) {
+            newErrors.username = "Username must be at least 3 characters";
         }
 
-
-        if(!form.email.trim()){
-
-            newErrors.email=
-            "Email is required";
-
-        }
-        else if(
-            !/\S+@\S+\.\S+/.test(form.email)
-        ){
-
-            newErrors.email=
-            "Enter a valid email address";
-
+        if (!form.email.trim()) {
+            newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+            newErrors.email = "Enter a valid email address";
         }
 
-
-
-        if(!form.password){
-
-            newErrors.password=
-            "Password is required";
-
-        }
-        else if(form.password.length < 6){
-
-            newErrors.password=
-            "Password must contain minimum 6 characters";
-
+        if (!form.password) {
+            newErrors.password = "Password is required";
+        } else if (form.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
         }
 
-
-
-        if(!form.confirmPassword){
-
-            newErrors.confirmPassword=
-            "Please confirm your password";
-
-        }
-        else if(
-            form.password !== form.confirmPassword
-        ){
-
-            newErrors.confirmPassword=
-            "Passwords do not match";
-
+        if (!form.confirmPassword) {
+            newErrors.confirmPassword = "Confirm Password is required";
+        } else if (form.password !== form.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match";
         }
 
+        if (!form.address.trim()) {
+            newErrors.address = "Address is required";
+        } else if (form.address.length < 10) {
+            newErrors.address = "Address should contain at least 10 characters";
+        }
 
         return newErrors;
-
     };
-
-
 
     const handleRegister = async (e) => {
 
-    e.preventDefault();
+        e.preventDefault();
 
-    try {
+        const validationErrors = validate();
 
-        const response = await api.post(
-            "register/",
-            form
-        );
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
 
+        setServerError("");
 
-        if (response.data.success) {
+        try {
 
-            setMessage(
-                "Registration successful! Redirecting to login..."
+            const response = await api.post("register/", {
+                username: form.username,
+                email: form.email,
+                password: form.password,
+                address: form.address
+            });
+
+            if (response.data.success) {
+
+                setShowSuccessModal(true);
+
+            }
+
+        } catch (error) {
+
+            setServerError(
+                error.response?.data?.message ||
+                "Registration failed"
             );
-
-
-            setTimeout(() => {
-
-                if (response.data.success) {
-
-    setShowSuccessModal(true);
-
-}
-
-            }, 1500);
 
         }
 
-    }
-    catch (error) {
+    };
 
-        setMessage(
-            error.response?.data?.message ||
-            "Registration failed"
-        );
+    return (
 
-    }
-
-};
-
-
-
-    return(
-
-    <div className="
+        <div className="
         min-h-screen
         flex
         items-center
@@ -168,11 +131,11 @@ export default function Register(){
     ">
 
 
-    <form
+            <form
 
-    onSubmit={handleRegister}
+                onSubmit={handleRegister}
 
-    className="
+                className="
         bg-white
         shadow-xl
         rounded-xl
@@ -181,297 +144,279 @@ export default function Register(){
         max-w-md
     "
 
-    >
+            >
 
 
-    <h1 className="
+                <h1 className="
         text-3xl
         font-bold
         text-center
         mb-6
     ">
-        Create Account
-    </h1>
+                    Create Account
+                </h1>
 
 
 
-    {serverError && (
+                {serverError && (
 
-        <p className="
+                    <p className="
             text-red-600
             bg-red-100
             p-2
             rounded
             mb-4
         ">
-            {serverError}
-        </p>
+                        {serverError}
+                    </p>
 
-    )}
+                )}
 
 
 
-    {success && (
+                {success && (
 
-        <p className="
+                    <p className="
             text-green-600
             bg-green-100
             p-2
             rounded
             mb-4
         ">
-            {success}
-        </p>
+                        {success}
+                    </p>
 
-    )}
+                )}
 
 
 
 
-    {/* Username */}
+                {/* Username */}
 
-    <input
+                <input
 
-    name="username"
+                    name="username"
 
-    placeholder="Username"
+                    placeholder="Username"
 
-    value={form.username}
+                    value={form.username}
 
-    onChange={handleChange}
+                    onChange={handleChange}
 
-    className="
-        w-full
-        border
-        rounded-lg
-        p-3
-    "
+                    className={`w-full border rounded-lg p-3 ${errors.username ? "border-red-500" : "border-gray-300"
+                        }`}
 
-    />
+                />
 
-    {
-    errors.username &&
+                {
+                    errors.username &&
 
-    <p className="text-red-500 text-sm mt-1">
-        {errors.username}
-    </p>
-    }
+                    <p className="text-red-500 text-sm mt-1">
+                        {errors.username}
+                    </p>
+                }
 
 
 
 
-    {/* Email */}
+                {/* Email */}
 
-    <input
+                <input
 
-    name="email"
+                    name="email"
 
-    type="email"
+                    type="email"
 
-    placeholder="Email"
+                    placeholder="Email"
 
-    value={form.email}
+                    value={form.email}
 
-    onChange={handleChange}
+                    onChange={handleChange}
 
-    className="
-        w-full
-        border
-        rounded-lg
-        p-3
-        mt-4
-    "
+                    className={`w-full border rounded-lg p-3 ${errors.username ? "border-red-500" : "border-gray-300"
+                        }`}
 
-    />
+                />
 
-    {
-    errors.email &&
+                {
+                    errors.email &&
 
-    <p className="text-red-500 text-sm mt-1">
-        {errors.email}
-    </p>
+                    <p className="text-red-500 text-sm mt-1">
+                        {errors.email}
+                    </p>
 
-    }
+                }
 
 
 
 
-    {/* Password */}
+                {/* Password */}
 
-    <input
+                <input
 
-    name="password"
+                    name="password"
 
-    type="password"
+                    type="password"
 
-    placeholder="Password"
+                    placeholder="Password"
 
-    value={form.password}
+                    value={form.password}
 
-    onChange={handleChange}
+                    onChange={handleChange}
 
-    className="
-        w-full
-        border
-        rounded-lg
-        p-3
-        mt-4
-    "
+                    className={`w-full border rounded-lg p-3 ${errors.username ? "border-red-500" : "border-gray-300"
+                        }`}
+                />
 
-    />
 
+                {
+                    errors.password &&
 
-    {
-    errors.password &&
+                    <p className="text-red-500 text-sm mt-1">
+                        {errors.password}
+                    </p>
 
-    <p className="text-red-500 text-sm mt-1">
-        {errors.password}
-    </p>
+                }
 
-    }
 
 
 
+                {/* Confirm Password */}
 
-    {/* Confirm Password */}
+                <input
 
-    <input
+                    name="confirmPassword"
 
-    name="confirmPassword"
+                    type="password"
 
-    type="password"
+                    placeholder="Confirm Password"
 
-    placeholder="Confirm Password"
+                    value={form.confirmPassword}
 
-    value={form.confirmPassword}
+                    onChange={handleChange}
 
-    onChange={handleChange}
+                    className={`w-full border rounded-lg p-3 ${errors.username ? "border-red-500" : "border-gray-300"
+                        }`}
 
-    className="
-        w-full
-        border
-        rounded-lg
-        p-3
-        mt-4
-    "
+                />
 
-    />
 
+                {
+                    errors.confirmPassword &&
 
-    {
-    errors.confirmPassword &&
+                    <p className="text-red-500 text-sm mt-1">
+                        {errors.confirmPassword}
+                    </p>
 
-    <p className="text-red-500 text-sm mt-1">
-        {errors.confirmPassword}
-    </p>
+                }
 
-    }
 
 
+                <textarea
 
-    <textarea
+                    name="address"
 
-        name="address"
+                    placeholder="Enter your address"
 
-        placeholder="Enter your address"
+                    value={form.address}
 
-        value={form.address}
+                    onChange={handleChange}
 
-        onChange={handleChange}
+                    className={`w-full border rounded-lg p-3 ${errors.username ? "border-red-500" : "border-gray-300"
+                        }`}
 
-        className="
-        w-full
-        border
-        rounded-lg
-        p-3
-        mb-4
-        "
+                ></textarea>
 
-        ></textarea>
+                {errors.address && (
+                    <p className="text-red-500 text-sm mt-1">
+                        {errors.address}
+                    </p>
+                )}
 
 
+                <button
 
+                    className="
+                        w-full
+                        bg-green-600
+                        text-white
+                        py-3
+                        rounded-lg
+                        mt-6
+                        hover:bg-green-700
+                    "
 
-    <button
+                >
 
-    className="
-        w-full
-        bg-green-600
-        text-white
-        py-3
-        rounded-lg
-        mt-6
-        hover:bg-green-700
-    "
+                    Register
 
-    >
+                </button>
 
-    Register
 
-    </button>
 
+                <p className="
+                    text-center
+                    mt-4
+                ">
 
+                    Already have an account?
 
-    <p className="
-        text-center
-        mt-4
-    ">
+                    <button
 
-    Already have an account?
+                        type="button"
 
-    <button
+                        onClick={() => navigate("/login")}
 
-    type="button"
+                        className="
+                            text-blue-600
+                            ml-2
+                            "
 
-    onClick={()=>navigate("/login")}
+                    >
+                        Login
+                    </button>
 
-    className="
-        text-blue-600
-        ml-2
-    "
+                </p>
 
-    >
-        Login
-    </button>
 
-    </p>
 
+            </form>
 
 
-    </form>
 
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
+                    <div className="bg-white rounded-xl shadow-xl p-8 w-96 text-center">
 
-{showSuccessModal && (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="text-6xl mb-4">✅</div>
 
-        <div className="bg-white rounded-xl shadow-xl p-8 w-96 text-center">
+                        <h2 className="text-2xl font-bold mb-2">
+                            Registration Successful
+                        </h2>
 
-            <div className="text-6xl mb-4">✅</div>
+                        <p className="text-gray-600 mb-6">
+                            Your account has been created successfully.
+                        </p>
 
-            <h2 className="text-2xl font-bold mb-2">
-                Registration Successful
-            </h2>
+                        <button
+                            onClick={() => {
 
-            <p className="text-gray-600 mb-6">
-                Your account has been created successfully.
-            </p>
+                                setShowSuccessModal(false);
 
-            <button
-                onClick={() => {
-                    setShowSuccessModal(false);
-                    navigate("/login");
-                }}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
-            >
-                Go to Login
-            </button>
+                                navigate("/login");
 
+                            }}
+                            className="bg-green-600 text-white px-6 py-2 rounded-lg"
+                        >
+                            Continue
+                        </button>
+
+                    </div>
+
+                </div>
+            )}
         </div>
-
-    </div>
-)}
-    </div>
 
     );
 
