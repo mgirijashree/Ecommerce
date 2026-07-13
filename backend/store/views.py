@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 import json
 from django.shortcuts import render
-from .models import Product,Category
+from .models import Product,Category,UserProfile
 from django.http import JsonResponse, HttpResponse
 
 def home(request):
@@ -23,74 +23,7 @@ def home(request):
         <li><a href="/admin/">Admin Panel</a></li>
     </ul>
     """)
-
 def product_list(request):
-
-    category_id = request.GET.get("category")
-
-    products = Product.objects.all()
-
-    if category_id:
-        products = products.filter(category_id=category_id)
-
-    data = []
-
-    for product in products:
-
-        image = ""
-
-        if product.image:
-            image = f"https://ecommerce-7jru.onrender.com{product.image.url}"
-
-        data.append({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": float(product.price),
-            "stock": product.stock,
-            "image": image,
-            "category": product.category.id,
-            "category_name": product.category.name,
-        })
-
-    return JsonResponse({
-        "products": data
-    })
-
-    category_id = request.GET.get("category")
-
-    products = Product.objects.all()
-
-    if category_id:
-        products = products.filter(category_id=category_id)
-
-    data = []
-
-    for product in products:
-
-        image = ""
-
-        if product.image:
-            if product.image:
-                if request.get_host() == "ecommerce-7jru.onrender.com":
-                    image = f"https://ecommerce-7jru.onrender.com{product.image.url}"
-                else:
-                    image = request.build_absolute_uri(product.image.url)
-
-        data.append({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": float(product.price),
-            "stock": product.stock,
-            "image": image,
-            "category": product.category.id,
-            "category_name": product.category.name,
-        })
-
-    return JsonResponse({
-        "products": data
-    })
 
     category_id = request.GET.get("category")
 
@@ -123,38 +56,6 @@ def product_list(request):
         "products": data
     })
 
-    category_id = request.GET.get("category")
-
-    products = Product.objects.all()
-
-    if category_id:
-        products = products.filter(category_id=category_id)
-
-    data = []
-
-    for product in products:
-
-        image = ""
-
-        try:
-            if product.image:
-                image = product.image.url
-        except:
-            image = ""
-
-        data.append({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": float(product.price),
-            "stock": product.stock,
-            "image": image,
-            "category": product.category.id,
-            "category_name": product.category.name,
-        })
-
-    return JsonResponse({"products": data})
-
 
 def category_list(request):
 
@@ -175,6 +76,48 @@ def category_list(request):
 def register_user(request):
 
     if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+        address = data.get("address")
+
+        errors = {}
+
+        if User.objects.filter(username=username).exists():
+            errors["username"] = "Username already exists."
+
+        if User.objects.filter(email=email).exists():
+            errors["email"] = "Email already exists."
+
+        if errors:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "errors": errors
+                },
+                status=400
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        UserProfile.objects.create(
+            user=user,
+            address=address
+        )
+
+        return JsonResponse({
+            "success": True,
+            "message": "Registration successful"
+        })
+
+  
 
         data = json.loads(request.body)
 
@@ -229,83 +172,36 @@ def register_user(request):
 @csrf_exempt
 def login_user(request):
 
-    if request.method=="POST":
+    if request.method == "POST":
 
-        data=json.loads(request.body)
-
+        data = json.loads(request.body)
 
         user = authenticate(
             username=data.get("username"),
             password=data.get("password")
         )
 
-
         if user:
-
-            login(request,user)
-
-
-            profile = UserProfile.objects.get(
-                user=user
-            )
-
-
-            return JsonResponse({
-
-                "success": True,
-
-                "username": user.username,
-
-                "address": profile.address
-
-            })
-
-
-        return JsonResponse(
-            {
-                "success":False,
-                "message":"Invalid username or password"
-            },
-            status=401
-        )
-
-    if request.method == "POST":
-
-        data = json.loads(request.body)
-
-        username = data.get("username")
-        password = data.get("password")
-
-
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
-
-
-        if user is not None:
 
             login(request, user)
 
+            profile = UserProfile.objects.get(user=user)
+
             return JsonResponse({
                 "success": True,
-                "message": "Login successful",
-                "username": user.username
+                "username": user.username,
+                "address": profile.address
             })
 
-
-        else:
-
-            return JsonResponse({
-                "success": False,
-                "message": "Invalid username or password"
-            }, status=401)
-
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid username or password"
+        }, status=401)
 
     return JsonResponse({
-        "message":"Only POST allowed"
+        "message": "Only POST allowed"
     })
+
 
 def logout_user(request):
 
