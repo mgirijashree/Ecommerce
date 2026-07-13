@@ -7,6 +7,10 @@ import Cart from "./components/Cart";
 import Checkout from "./pages/Checkout";
 import Login from './components/Login';
 import Register from './components/Register';
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
+
 
 
 function App() {
@@ -44,19 +48,19 @@ function App() {
         />
       }>
         <Route path="/" element={<Home />} />
-        <Route path="/products/" element={
+        <Route path="/products" element={
           <Products
-            cartItems={cartItems}
-            onAddToCart={handleAddToCart}
-            isCartOpen={isCartOpen}
-            setIsCartOpen={setIsCartOpen}
-            increaseQuantity={increaseQuantity}
-            decreaseQuantity={decreaseQuantity}
-            removeItem={removeItem}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+              cartItems={cartItems}
+              onAddToCart={handleAddToCart}
+              isCartOpen={isCartOpen}
+              setIsCartOpen={setIsCartOpen}
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
+              removeItem={removeItem}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
           />
-        } />
+      } />
         <Route path="/cart/" element={
           <Cart
             cartItems={cartItems}

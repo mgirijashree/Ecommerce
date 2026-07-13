@@ -99,54 +99,32 @@ export default function Login() {
 
       if (response.data.success) {
 
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-
-            username: response.data.username,
-
-            address: response.data.address
-
-          })
-        );
-
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
+    localStorage.setItem(
+        "user",
+        JSON.stringify({
             username: response.data.username,
             address: response.data.address,
-          })
-        );
+        })
+    );
 
-        setShowSuccessModal(true);
+    setShowSuccessModal(true);
 
-        setTimeout(() => {
-          setShowSuccessModal(false);
-          navigate("/products");
-        }, 5000);
-
-      }
+    setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate("/products");
+    }, 5000);
+}
 
 
     }
     catch (error) {
 
-    if (error.response?.data?.errors) {
-
-        setErrors(error.response.data.errors);
-
-    } else {
-
-        setServerError(
-            error.response?.data?.message ||
-            "Registration failed"
-        );
+      setServerError(
+        error.response?.data?.message ||
+        "Invalid username or password"
+      );
 
     }
-
-}
 
   };
 
