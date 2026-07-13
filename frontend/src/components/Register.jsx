@@ -9,255 +9,411 @@ export default function Register(){
 
 
     const [form,setForm] = useState({
-
         username:"",
         email:"",
-        password:""
-
+        password:"",
+        confirmPassword:""
     });
 
 
-    const [message,setMessage] = useState("");
+    const [errors,setErrors] = useState({});
+
+    const [serverError,setServerError] = useState("");
+
+    const [success,setSuccess] = useState("");
 
 
 
-    const handleChange = (e)=>{
+    const handleChange=(e)=>{
 
         setForm({
-
             ...form,
-
             [e.target.name]:e.target.value
+        });
 
+
+        // remove field error while typing
+        setErrors({
+            ...errors,
+            [e.target.name]:""
         });
 
     };
 
 
 
-    const handleRegister = async(e)=>{
+    const validate = ()=>{
 
-        e.preventDefault();
-
-
-        try{
-
-            const response = await api.post(
-                "register/",
-                form
-            );
+        let newErrors={};
 
 
-            if(response.data.success){
+        if(!form.username.trim()){
 
-                setMessage(
-                    "Registration successful"
-                );
-
-
-                setTimeout(()=>{
-
-                    navigate("/login");
-
-                },1000);
-
-            }
-
+            newErrors.username=
+            "Username is required";
 
         }
-        catch(error){
 
-            setMessage(
-                error.response?.data?.message ||
-                "Registration failed"
-            );
+
+        if(!form.email.trim()){
+
+            newErrors.email=
+            "Email is required";
 
         }
+        else if(
+            !/\S+@\S+\.\S+/.test(form.email)
+        ){
+
+            newErrors.email=
+            "Enter a valid email address";
+
+        }
+
+
+
+        if(!form.password){
+
+            newErrors.password=
+            "Password is required";
+
+        }
+        else if(form.password.length < 6){
+
+            newErrors.password=
+            "Password must contain minimum 6 characters";
+
+        }
+
+
+
+        if(!form.confirmPassword){
+
+            newErrors.confirmPassword=
+            "Please confirm your password";
+
+        }
+        else if(
+            form.password !== form.confirmPassword
+        ){
+
+            newErrors.confirmPassword=
+            "Passwords do not match";
+
+        }
+
+
+        return newErrors;
 
     };
 
 
 
-    return (
+    const handleRegister = async (e) => {
 
-        <div
-        className="
-            min-h-screen
-            flex
-            items-center
-            justify-center
-            bg-gray-100
-            px-4
-        "
-        >
+    e.preventDefault();
+
+    try {
+
+        const response = await api.post(
+            "register/",
+            form
+        );
 
 
-        <form
+        if (response.data.success) {
 
-        onSubmit={handleRegister}
-
-        className="
-            bg-white
-            shadow-xl
-            rounded-xl
-            p-8
-            w-full
-            max-w-md
-        "
-
-        >
+            setMessage(
+                "Registration successful! Redirecting to login..."
+            );
 
 
-        <h1
-        className="
-            text-3xl
-            font-bold
-            text-center
-            mb-6
-        "
-        >
-            Create Account
-        </h1>
+            setTimeout(() => {
 
+                navigate("/login");
 
+            }, 1500);
 
-        {
-            message &&
-
-            <p className="
-                text-center
-                text-blue-600
-                mb-4
-            ">
-                {message}
-            </p>
         }
 
+    }
+    catch (error) {
+
+        setMessage(
+            error.response?.data?.message ||
+            "Registration failed"
+        );
+
+    }
+
+};
 
 
-        <input
 
-        name="username"
+    return(
 
-        placeholder="Username"
+    <div className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-gray-100
+        px-4
+    ">
 
-        value={form.username}
 
-        onChange={handleChange}
+    <form
 
-        className="
-            w-full
-            border
-            rounded-lg
-            p-3
+    onSubmit={handleRegister}
+
+    className="
+        bg-white
+        shadow-xl
+        rounded-xl
+        p-8
+        w-full
+        max-w-md
+    "
+
+    >
+
+
+    <h1 className="
+        text-3xl
+        font-bold
+        text-center
+        mb-6
+    ">
+        Create Account
+    </h1>
+
+
+
+    {serverError && (
+
+        <p className="
+            text-red-600
+            bg-red-100
+            p-2
+            rounded
             mb-4
-        "
-
-        />
-
-
-
-        <input
-
-        name="email"
-
-        type="email"
-
-        placeholder="Email"
-
-        value={form.email}
-
-        onChange={handleChange}
-
-        className="
-            w-full
-            border
-            rounded-lg
-            p-3
-            mb-4
-        "
-
-        />
-
-
-
-        <input
-
-        name="password"
-
-        type="password"
-
-        placeholder="Password"
-
-        value={form.password}
-
-        onChange={handleChange}
-
-        className="
-            w-full
-            border
-            rounded-lg
-            p-3
-            mb-5
-        "
-
-        />
-
-
-
-        <button
-
-        className="
-            w-full
-            bg-green-600
-            text-white
-            py-3
-            rounded-lg
-            hover:bg-green-700
-        "
-
-        >
-
-            Register
-
-        </button>
-
-
-
-        <p
-        className="
-            text-center
-            mt-4
-        "
-        >
-
-        Already have account?
-
-        <button
-
-        type="button"
-
-        onClick={()=>navigate("/login")}
-
-        className="
-            text-blue-600
-            ml-2
-        "
-
-        >
-
-        Login
-
-        </button>
-
-
+        ">
+            {serverError}
         </p>
 
+    )}
 
-        </form>
 
 
-        </div>
+    {success && (
+
+        <p className="
+            text-green-600
+            bg-green-100
+            p-2
+            rounded
+            mb-4
+        ">
+            {success}
+        </p>
+
+    )}
+
+
+
+
+    {/* Username */}
+
+    <input
+
+    name="username"
+
+    placeholder="Username"
+
+    value={form.username}
+
+    onChange={handleChange}
+
+    className="
+        w-full
+        border
+        rounded-lg
+        p-3
+    "
+
+    />
+
+    {
+    errors.username &&
+
+    <p className="text-red-500 text-sm mt-1">
+        {errors.username}
+    </p>
+    }
+
+
+
+
+    {/* Email */}
+
+    <input
+
+    name="email"
+
+    type="email"
+
+    placeholder="Email"
+
+    value={form.email}
+
+    onChange={handleChange}
+
+    className="
+        w-full
+        border
+        rounded-lg
+        p-3
+        mt-4
+    "
+
+    />
+
+    {
+    errors.email &&
+
+    <p className="text-red-500 text-sm mt-1">
+        {errors.email}
+    </p>
+
+    }
+
+
+
+
+    {/* Password */}
+
+    <input
+
+    name="password"
+
+    type="password"
+
+    placeholder="Password"
+
+    value={form.password}
+
+    onChange={handleChange}
+
+    className="
+        w-full
+        border
+        rounded-lg
+        p-3
+        mt-4
+    "
+
+    />
+
+
+    {
+    errors.password &&
+
+    <p className="text-red-500 text-sm mt-1">
+        {errors.password}
+    </p>
+
+    }
+
+
+
+
+    {/* Confirm Password */}
+
+    <input
+
+    name="confirmPassword"
+
+    type="password"
+
+    placeholder="Confirm Password"
+
+    value={form.confirmPassword}
+
+    onChange={handleChange}
+
+    className="
+        w-full
+        border
+        rounded-lg
+        p-3
+        mt-4
+    "
+
+    />
+
+
+    {
+    errors.confirmPassword &&
+
+    <p className="text-red-500 text-sm mt-1">
+        {errors.confirmPassword}
+    </p>
+
+    }
+
+
+
+
+    <button
+
+    className="
+        w-full
+        bg-green-600
+        text-white
+        py-3
+        rounded-lg
+        mt-6
+        hover:bg-green-700
+    "
+
+    >
+
+    Register
+
+    </button>
+
+
+
+    <p className="
+        text-center
+        mt-4
+    ">
+
+    Already have an account?
+
+    <button
+
+    type="button"
+
+    onClick={()=>navigate("/login")}
+
+    className="
+        text-blue-600
+        ml-2
+    "
+
+    >
+        Login
+    </button>
+
+    </p>
+
+
+
+    </form>
+
+
+    </div>
 
     );
 
