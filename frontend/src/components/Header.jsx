@@ -59,9 +59,50 @@ export default function Header({
             setSearchTerm(e.target.value);
             navigate("/products");
           }}
-          className="w-full border rounded-lg px-3 py-2 " />
+          className="
+            w-full
+            border
+            rounded-lg
+            px-3
+            py-2
+            text-sm
+            sm:text-base
+          "
+        />
 
       </div>
+
+
+      {/* Login Button */}
+      <button
+        onClick={() => navigate("/login")}
+        className="
+          hidden
+          sm:block
+          bg-blue-600
+          text-white
+          px-4
+          py-2
+          rounded-lg
+          hover:bg-blue-700
+          transition
+        "
+      >
+        Login
+      </button>
+
+
+      {/* Mobile Login */}
+      <button
+        onClick={() => navigate("/login")}
+        className="
+          sm:hidden
+          text-blue-600
+          font-semibold
+        "
+      >
+        Login
+      </button>
 
 
       {/* Cart */}
