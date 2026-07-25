@@ -18,4 +18,6 @@ urlpatterns = [
 
     path("chatbot/", views.chatbot, name="chatbot"),
 
+    path("products/", views.product_list, name="product-list"),
+
 ]

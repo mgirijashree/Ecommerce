@@ -66,7 +66,7 @@ function Cart({
                 >
 
                   <img
-                    src={item.image}
+                    src={`https://ecommerce-7jru.onrender.com${item.image}`}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded"
                   />

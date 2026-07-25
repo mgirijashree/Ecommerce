@@ -1,12 +1,32 @@
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .chatbot import build_database_context
 from .search import search_products, product_context
 from .ai import ask_ai
+from .models import Product
 
 
 import json
+
+
+def product_list(request):
+
+    products = Product.objects.all()
+
+    data = [
+        {
+            "id": p.id,
+            "name": p.name,
+            "description": p.description,
+            "price": str(p.price),
+            "image": p.image.url if p.image else "",
+        }
+        for p in products
+    ]
+
+    return JsonResponse(data, safe=False)
 
 
 @csrf_exempt

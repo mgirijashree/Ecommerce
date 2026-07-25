@@ -27,9 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-w30oc$#4%*_fd$oy9y4mik4&#b7i(lprhtmcpt96p93i_zmm7j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "ecommerce-7jru.onrender.com",
+]
 
 
 # Application definition
@@ -140,6 +142,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CORS_ALLOWED_ORIGINS = [
 
     "http://localhost:5173",
+    "https://ecommerce-1-l4n4.onrender.com",
 
 ]
 
