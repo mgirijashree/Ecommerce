@@ -6,7 +6,7 @@ function Sidebar({ isOpen, closeSidebar, selectedCategory, onSelectCategory, act
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/categories/")
+    fetch("https://ecommerce-7jru.onrender.com/api/categories/")
       .then((response) => response.json())
       .then((data) => {
         setCategories([{ id: "", name: "All Products", slug: "" }, ...data]);
