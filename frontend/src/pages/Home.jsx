@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import ProductGallery from "../components/ProductGallery";
 import Cart from "../components/Cart";
+import Footer from "../components/Footer";
 
 function Home(props) {
 
@@ -32,6 +33,8 @@ function Home(props) {
           />
 
         </main>
+
+        <Footer />
 
       </div>
 
