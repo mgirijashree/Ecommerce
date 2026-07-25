@@ -8,23 +8,17 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-
-    category = serializers.StringRelatedField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
+        fields = "__all__"
 
-        fields = [
-            "id",
-            "name",
-            "category",
-            "description",
-            "price",
-            "image",
-            "stock",
-            "available"
-        ]
-
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
