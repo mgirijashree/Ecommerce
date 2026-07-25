@@ -1,69 +1,64 @@
+# =====================
 # Python
+# =====================
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual Environment
+# Virtual environments
 venv/
 env/
 .venv/
 
+# =====================
 # Django
-*.log
+# =====================
+
+# Environment variables
+.env
+.env.*
+backend/.env
+
+# Database
 db.sqlite3
 db.sqlite3-journal
 
-# Environment variables (secret keys, passwords)
-.env
-.env.*
+# Logs
+*.log
 
-# Django static/media files
+# Static and media
 staticfiles/
 media/
 
-# Migrations (optional)
-# Keep migrations in team projects, so usually DO NOT ignore
-# */migrations/*
+# =====================
+# React
+# =====================
 
-# Coverage
-.coverage
-htmlcov/
-
-# IDE
-.vscode/
-.idea/
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.swp
-
-
-.env
-backend/.env
-
-# React dependencies
 node_modules/
 frontend/node_modules/
 
-# Build files
 dist/
 frontend/dist/
 
-# Python
-__pycache__/
-*.pyc
-venv/
-.env
-
-# Django
-db.sqlite3
-media/
-*.log
-
+# =====================
 # IDE
+# =====================
+
 .vscode/
 .idea/
+
+# =====================
+# OS Files
+# =====================
+
+.DS_Store
+Thumbs.db
+
+# =====================
+# Temporary / Coverage
+# =====================
+
+*.tmp
+*.swp
+.coverage
+htmlcov/
