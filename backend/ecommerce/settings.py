@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+     "rest_framework", 
+
     'store',
     "corsheaders",
 ]
@@ -165,3 +167,5 @@ CORS_ALLOWED_ORIGINS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+RAZORPAY_KEY_ID="rzp_test_THpgPkDTGWvi5t"
+RAZORPAY_KEY_SECRET="8yDl4UGAdI97SzLF38Ez548n"

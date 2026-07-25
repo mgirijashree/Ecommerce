@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Register() {
+function Register({ onClose, onSwitchToLogin }) {
 
     const [form, setForm] = useState({
         username: "",
@@ -43,6 +43,7 @@ function Register() {
             if (res.ok && !data.error) {
                 alert(data.message || "Registered Successfully");
                 setForm({ username: "", email: "", password: "" });
+                onSwitchToLogin();
             } else {
                 setError(data.error || data.message || "Registration failed. Please try again.");
             }
@@ -55,9 +56,17 @@ function Register() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
 
-            <div className="bg-white w-full max-w-md rounded-xl shadow p-8">
+            <div className="bg-white w-full max-w-md rounded-xl shadow p-8 relative">
+
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-2xl leading-none text-gray-500 hover:text-black"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
 
                 <h1 className="text-2xl font-bold mb-6 text-center">
                     Register
@@ -110,6 +119,16 @@ function Register() {
                     </button>
 
                 </form>
+
+                <p className="text-center text-sm text-gray-500 mt-5">
+                    Already have an account?{" "}
+                    <button
+                        onClick={onSwitchToLogin}
+                        className="text-amber-700 font-medium hover:underline"
+                    >
+                        Login
+                    </button>
+                </p>
 
             </div>
 

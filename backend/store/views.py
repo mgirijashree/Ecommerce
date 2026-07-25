@@ -5,31 +5,42 @@ from django.views.decorators.csrf import csrf_exempt
 from .chatbot import build_database_context
 from .search import search_products, product_context
 from .ai import ask_ai
-from .models import Product
+from .models import Product, Order
 from django.shortcuts import render
+from rest_framework.response import Response
+from .serializers import ProductSerializer, OrderSerializer
+import razorpay
+from django.conf import settings
 
+from django.db.models import Sum, Count
+from rest_framework.decorators import api_view
+
+
+from rest_framework import generics
 import json
+
+from rest_framework.views import APIView
+
+from rest_framework.permissions import IsAdminUser
 
 
 def home_view(request):
     return render(request, 'store/home.html')
 
+@api_view(["GET"])
 def product_list(request):
 
-    products = Product.objects.all()
+    products = Product.objects.filter(
+        available=True
+    )
 
-    data = [
-        {
-            "id": p.id,
-            "name": p.name,
-            "description": p.description,
-            "price": str(p.price),
-            "image": p.image.url if p.image else "",
-        }
-        for p in products
-    ]
+    serializer = ProductSerializer(
+        products,
+        many=True,
+        context={"request": request}
+    )
 
-    return JsonResponse(data, safe=False)
+    return Response(serializer.data)
 
 
 @csrf_exempt
@@ -156,30 +167,225 @@ def chat(request):
         "reply": reply
     })
 
+
 @csrf_exempt
 def chatbot(request):
-
     if request.method != "POST":
-        return JsonResponse({
-            "reply": "Invalid request."
-        })
+        return JsonResponse({"reply": "POST only"})
 
-    try:
-        data = json.loads(request.body)
-    except (json.JSONDecodeError, UnicodeDecodeError):
-        return JsonResponse({"error": "Invalid JSON body"}, status=400)
-
+    data = json.loads(request.body)
     message = data.get("message", "")
 
-    products = search_products(message)
+    return JsonResponse({
+        "reply": f"You said: {message}"
+    })
 
-    context = product_context(products)
 
-    reply = ask_ai(
-        message,
-        context
+
+class ProductDetailView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+@api_view(["POST"])
+def create_order(request):
+
+    serializer = OrderSerializer(
+        data=request.data
     )
 
-    return JsonResponse({
-        "reply": reply
+    if serializer.is_valid():
+
+        serializer.save()
+
+        return Response(
+            {
+                "message":"Order placed successfully"
+            },
+            status=201
+        )
+
+
+    return Response(
+        serializer.errors,
+        status=400
+    )
+
+
+
+
+class OrderCreateView(
+    generics.CreateAPIView
+):
+
+    queryset = Order.objects.all()
+
+    serializer_class = OrderSerializer
+
+
+
+@api_view(["POST"])
+def create_payment(request):
+
+    amount = request.data.get("amount")
+
+
+    client = razorpay.Client(
+        auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        )
+    )
+
+
+    payment_order = client.order.create(
+        {
+
+            "amount": int(amount * 100),  # paise
+
+            "currency":"INR",
+
+            "payment_capture":1
+
+        }
+    )
+
+
+    return Response(
+        {
+            "id": payment_order["id"],
+            "amount": payment_order["amount"],
+            "currency":"INR",
+
+            "key":
+            settings.RAZORPAY_KEY_ID
+
+        }
+    )
+
+
+
+
+
+class UpdateOrderStatusView(APIView):
+
+
+    def patch(self, request, pk):
+
+        order = Order.objects.get(
+            id=pk
+        )
+
+
+        status = request.data.get(
+            "status"
+        )
+
+
+        order.status = status
+
+        order.save()
+
+
+        return Response({
+
+            "message":
+            "Status updated successfully"
+
+        })
+
+
+
+
+@api_view(["GET"])
+def track_order(request, pk):
+
+    try:
+        order = Order.objects.get(pk=pk)
+    except Order.DoesNotExist:
+        return Response(
+            {"error": "Order not found"},
+            status=404
+        )
+
+    return Response({
+        "id": order.id,
+        "customer": order.full_name,
+        "status": order.status,
+        "payment": order.payment_method,
+        "total": order.grand_total,
+        "date": order.order_date,
     })
+
+
+@api_view(["GET"])
+def track_order(request, pk):
+
+    try:
+        order = Order.objects.get(pk=pk)
+    except Order.DoesNotExist:
+        return Response(
+            {"error": "Order not found"},
+            status=404
+        )
+
+    return Response({
+
+        "id": order.id,
+
+        "customer": order.full_name,
+
+        "payment": order.payment_method,
+
+        "status": order.status,
+
+        "total": order.grand_total,
+
+        "date": order.order_date,
+
+        "items": [
+
+            {
+                "product": item.product.name,
+                "image": request.build_absolute_uri(
+                    item.product.image.url
+                ),
+                "price": item.price,
+                "quantity": item.quantity,
+            }
+
+            for item in order.items.all()
+
+        ]
+
+    })
+
+
+
+@api_view(["GET"])
+def order_list(request):
+
+    orders = Order.objects.all().order_by("-order_date")
+
+    data = []
+
+    for order in orders:
+
+        data.append({
+
+            "id": order.id,
+
+            "customer": order.full_name,
+
+            "total": order.grand_total,
+
+            "status": order.status,
+
+            "payment": order.payment_method,
+
+            "date": order.order_date,
+
+        })
+
+    return Response(data)
+

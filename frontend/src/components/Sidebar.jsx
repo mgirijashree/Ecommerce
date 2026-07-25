@@ -1,6 +1,23 @@
-import { X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, ShoppingBag, Truck, Home, Tag } from "lucide-react";
 
-function Sidebar({ isOpen, closeSidebar }) {
+function Sidebar({ isOpen, closeSidebar, selectedCategory, onSelectCategory, activePage, setActivePage }) {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/categories/")
+      .then((response) => response.json())
+      .then((data) => {
+        setCategories([{ id: "", name: "All Products", slug: "" }, ...data]);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -18,50 +35,80 @@ function Sidebar({ isOpen, closeSidebar }) {
           bg-white
           shadow-xl
           z-50
-          transform transition-transform duration-300
-
+          transform transition-transform duration-300 flex flex-col
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-
           lg:translate-x-0
         `}
       >
+        {/* Brand Header */}
         <div className="flex justify-between items-center p-5 border-b">
-
           <h1 className="text-2xl font-bold text-yellow-700">
             Jewelry
           </h1>
-
-          <button
-            className="lg:hidden"
-            onClick={closeSidebar}
-          >
+          <button className="lg:hidden" onClick={closeSidebar}>
             <X size={28} />
           </button>
-
         </div>
 
-        <nav className="flex flex-col">
+        {/* Navigation Links */}
+        <nav className="flex flex-col mt-2 flex-1 overflow-y-auto">
+          {/* General Views */}
+          <button
+            onClick={() => { setActivePage("shop"); if (closeSidebar) closeSidebar(); }}
+            className={`flex items-center gap-3 px-6 py-4 text-left transition-colors ${
+              activePage === "shop" ? "bg-yellow-100 font-semibold text-yellow-900 border-l-4 border-yellow-700" : "hover:bg-yellow-50 text-gray-700"
+            }`}
+          >
+            <Home size={20} /> Shop
+          </button>
 
-          <a href="#" className="px-6 py-4 hover:bg-yellow-100">
-            Home
-          </a>
+          <button
+            onClick={() => { setActivePage("cart"); if (closeSidebar) closeSidebar(); }}
+            className={`flex items-center gap-3 px-6 py-4 text-left transition-colors ${
+              activePage === "cart" ? "bg-yellow-100 font-semibold text-yellow-900 border-l-4 border-yellow-700" : "hover:bg-yellow-50 text-gray-700"
+            }`}
+          >
+            <ShoppingBag size={20} /> Cart Page
+          </button>
 
-          <a href="#" className="px-6 py-4 hover:bg-yellow-100">
-            Rings
-          </a>
+          <button
+            onClick={() => { setActivePage("track-orders"); if (closeSidebar) closeSidebar(); }}
+            className={`flex items-center gap-3 px-6 py-4 text-left transition-colors ${
+              activePage === "track-orders" ? "bg-yellow-100 font-semibold text-yellow-900 border-l-4 border-yellow-700" : "hover:bg-yellow-50 text-gray-700"
+            }`}
+          >
+            <Truck size={20} /> Track Orders
+          </button>
 
-          <a href="#" className="px-6 py-4 hover:bg-yellow-100">
-            Earrings
-          </a>
+          <hr className="my-2 border-gray-200" />
+          <p className="px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categories</p>
 
-          <a href="#" className="px-6 py-4 hover:bg-yellow-100">
-            Necklace
-          </a>
-
-          <a href="#" className="px-6 py-4 hover:bg-yellow-100">
-            Watches
-          </a>
-
+          {/* Dynamic Categories */}
+          {loading ? (
+            <p className="px-6 py-2 text-gray-400 text-sm">Loading categories...</p>
+          ) : (
+            categories.map((category) => {
+              const isActive = activePage === "shop" && selectedCategory === category.slug;
+              
+              return (
+                <button
+                  key={category.id || "all"}
+                  onClick={() => {
+                    setActivePage("shop");
+                    onSelectCategory(category.slug);
+                    if (closeSidebar) closeSidebar();
+                  }}
+                  className={`flex items-center gap-3 px-6 py-3 text-left text-sm transition-colors ${
+                    isActive
+                      ? "bg-yellow-200 font-semibold text-yellow-900 border-l-4 border-yellow-700"
+                      : "hover:bg-yellow-50 text-gray-600"
+                  }`}
+                >
+                  <Tag size={16} /> {category.name}
+                </button>
+              );
+            })
+          )}
         </nav>
       </aside>
     </>

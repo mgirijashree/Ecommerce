@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Login() {
+function Login({ onClose, onSwitchToRegister, onSuccess }) {
 
     const [form, setForm] = useState({
         username: "",
@@ -41,7 +41,7 @@ function Login() {
 
             if (data.success) {
                 localStorage.setItem("username", data.username);
-                alert(`Welcome back, ${data.username}!`);
+                onSuccess(data.username);
             } else {
                 setError(data.message || "Invalid username or password");
             }
@@ -54,9 +54,17 @@ function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
 
-            <div className="bg-white w-full max-w-md rounded-xl shadow p-8">
+            <div className="bg-white w-full max-w-md rounded-xl shadow p-8 relative">
+
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-2xl leading-none text-gray-500 hover:text-black"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
 
                 <h1 className="text-2xl font-bold mb-6 text-center">
                     Login
@@ -99,6 +107,16 @@ function Login() {
                     </button>
 
                 </form>
+
+                <p className="text-center text-sm text-gray-500 mt-5">
+                    Don't have an account?{" "}
+                    <button
+                        onClick={onSwitchToRegister}
+                        className="text-amber-700 font-medium hover:underline"
+                    >
+                        Register
+                    </button>
+                </p>
 
             </div>
 

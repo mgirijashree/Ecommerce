@@ -1,116 +1,44 @@
-import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
 import Home from "./pages/Home";
-import CheckoutForm from "./components/CheckoutForm";
+import Shop from "./pages/Shop";
+import ProductDetails from "./pages/ProductDetails";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Orders from "./pages/Orders";
 import ChatBot from "./components/ChatBot";
+import TrackOrder from "./pages/TrackOrder";
+
 
 function App() {
-
-  const [cartItems, setCartItems] = useState([]);
-const [isCartOpen, setIsCartOpen] = useState(false);
-const [showCheckout, setShowCheckout] = useState(false);
-
-
-  const handleAddToCart = (product) => {
-    setCartItems((prevItems) => {
-
-      const existingItem = prevItems.find(
-        (item) => item.id === product.id
-      );
-
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      return [...prevItems, { ...product, quantity: 1 }];
-    });
-  };
-
-
-  // Increase Quantity
-const increaseQuantity = (id) => {
-  setCartItems((prevItems) =>
-    prevItems.map((item) =>
-      item.id === id
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    )
-  );
-};
-
-// Decrease Quantity
-const decreaseQuantity = (id) => {
-  setCartItems((prevItems) =>
-    prevItems
-      .map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-      .filter((item) => item.quantity > 0)
-  );
-};
-
-// Remove Item
-const removeItem = (id) => {
-  setCartItems((prevItems) =>
-    prevItems.filter((item) => item.id !== id)
-  );
-};
-
-
-
-
-
-
-
-
-
-  const grandTotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const handlePlaceOrder = async (formData) => {
-
-    const newOrder = {
-      customer: formData,
-      items: cartItems,
-      grandTotal: grandTotal,
-    };
-
-    console.log(newOrder);
-
-    alert("Order Placed Successfully!");
-
-    setCartItems([]);
-
-    setShowCheckout(false);
-  };
-
   return (
-    <>
-      <Home
-        cartItems={cartItems}
-        onAddToCart={handleAddToCart}
-        isCartOpen={isCartOpen}
-        setIsCartOpen={setIsCartOpen}
-        onCheckout={() => setShowCheckout(true)}
-        onIncrease={increaseQuantity}
-        onDecrease={decreaseQuantity}
-        onRemove={removeItem}
-      />
+    <div className="min-h-screen flex flex-col bg-[#faf8f4]">
+      <Navbar />
 
-      {showCheckout && (
-        <CheckoutForm
-          onPlaceOrder={handlePlaceOrder}
-        />
-      )}
-      <ChatBot/>
-    </>
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/track-order/:id" element={<TrackOrder />} />
+
+
+        </Routes>
+        <ChatBot />
+      </main>
+
+      <Footer />
+    </div>
   );
 }
 
