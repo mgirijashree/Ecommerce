@@ -10,13 +10,16 @@ export default function Shop() {
   const [category, setCategory] = useState("All");
 
   useEffect(() => {
-    api.get("products/")
-      .then((res) => {
-        setProducts(res.data);
-        setFilteredProducts(res.data);
-      })
-      .catch(console.error);
-  }, []);
+  api.get("products/")
+    .then((res) => {
+      console.log("API Response:", res.data);
+      setProducts(res.data);
+      setFilteredProducts(res.data);
+    })
+    .catch((err) => {
+      console.log("API Error:", err);
+    });
+}, []);
 
   useEffect(() => {
     let result = products;
