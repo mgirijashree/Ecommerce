@@ -66,7 +66,7 @@ function Cart({
                 >
 
                   <img
-                    src={`http://127.0.0.1:8000${item.image}`}
+                    src={item.image}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded"
                   />

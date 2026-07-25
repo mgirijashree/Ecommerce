@@ -1,12 +1,8 @@
 import axios from "axios";
 
-const API = "http://127.0.0.1:8000/api/chat/";
+const API = "https://ecommerce-7jru.onrender.com/chatbot/";
 
 export const askChatbot = async (message) => {
-
-    const response = await axios.post(API, {
-        message,
-    });
-
+    const response = await axios.post(API, { message });
     return response.data;
 };

@@ -30,7 +30,7 @@ function Register() {
 
         await fetch(
 
-            "http://127.0.0.1:8000/register/",
+            "https://ecommerce-7jru.onrender.com/register/",
 
             {
 
