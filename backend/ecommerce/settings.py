@@ -162,6 +162,7 @@ CORS_ALLOWED_ORIGINS = [
 
     "http://localhost:5173",
     "https://ecommerce-1-l4n4.onrender.com",
+    "https://ecommerce-7jru.onrender.com",
 
 ]
 
