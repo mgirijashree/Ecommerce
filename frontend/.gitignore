@@ -1,24 +1,68 @@
-# Logs
-logs
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Django
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+db.sqlite3
+db.sqlite3-journal
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment variables (secret keys, passwords)
+.env
+.env.*
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Django static/media files
+staticfiles/
+media/
+
+# Migrations (optional)
+# Keep migrations in team projects, so usually DO NOT ignore
+# */migrations/*
+
+# Coverage
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# OS generated files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+
+
+
+
+# React dependencies
+node_modules/
+frontend/node_modules/
+
+# Build files
+dist/
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Django
+db.sqlite3
+media/
+*.log
+
+# IDE
+.vscode/
+.idea/
