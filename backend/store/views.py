@@ -170,15 +170,56 @@ def chat(request):
 
 @csrf_exempt
 def chatbot(request):
+
     if request.method != "POST":
-        return JsonResponse({"reply": "POST only"})
 
-    data = json.loads(request.body)
-    message = data.get("message", "")
+        return JsonResponse(
+            {"reply":"POST request required"},
+            status=405
+        )
 
-    return JsonResponse({
-        "reply": f"You said: {message}"
-    })
+
+    try:
+
+        data=json.loads(request.body)
+
+        message=data.get(
+            "message",
+            ""
+        )
+
+
+        products = search_products(
+            message
+        )
+
+
+        context = product_context(
+            products
+        )
+
+
+        reply = ask_ai(
+            message,
+            context
+        )
+
+
+        return JsonResponse(
+            {
+                "reply":reply
+            }
+        )
+
+
+    except Exception as e:
+
+        return JsonResponse(
+            {
+                "error":str(e)
+            },
+            status=500
+        )
 
 
 
