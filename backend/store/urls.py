@@ -52,16 +52,16 @@ urlpatterns = [
     # Product APIs
 
     path(
-        "api/products/",
-        product_list,
-        name="product-list"
+    "api/products/",
+    product_list,
+    name="product-list"
     ),
 
 
     path(
-        "api/products/<int:pk>/",
-        ProductDetailView.as_view(),
-        name="product-detail"
+    "api/products/<int:pk>/",
+    ProductDetailView.as_view(),
+    name="product-detail"
     ),
 
 
