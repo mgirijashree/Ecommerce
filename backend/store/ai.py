@@ -1,10 +1,6 @@
 import os
 from groq import Groq
 
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
-
 SYSTEM_PROMPT = """
 You are the official AI assistant of Elegant Jewellery.
 
@@ -33,7 +29,15 @@ Sorry, that content is not available on this website.
 Please ask questions related to our jewellery store.
 """
 
+
 def ask_ai(question, database_context=""):
+
+    api_key = os.getenv("GROQ_API_KEY")
+
+    if not api_key:
+        return "AI chatbot is temporarily unavailable."
+
+    client = Groq(api_key=api_key)
 
     prompt = f"""
 Database Information:
@@ -49,12 +53,12 @@ User Question:
         model="llama-3.3-70b-versatile",
         messages=[
             {
-                "role":"system",
-                "content":SYSTEM_PROMPT
+                "role": "system",
+                "content": SYSTEM_PROMPT
             },
             {
-                "role":"user",
-                "content":prompt
+                "role": "user",
+                "content": prompt
             }
         ],
         temperature=0.2,
