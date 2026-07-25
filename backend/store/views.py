@@ -6,10 +6,13 @@ from .chatbot import build_database_context
 from .search import search_products, product_context
 from .ai import ask_ai
 from .models import Product
-
+from django.shortcuts import render
 
 import json
 
+
+def home_view(request):
+    return render(request, 'store/home.html')
 
 def product_list(request):
 
