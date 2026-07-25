@@ -37,29 +37,48 @@ def register(request):
 
     if request.method == "POST":
 
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return JsonResponse({"error": "Invalid JSON body"}, status=400)
+
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+
+        if not username or not email or not password:
+            return JsonResponse(
+                {"error": "Username, email and password are all required"},
+                status=400,
+            )
+
+        if User.objects.filter(username=username).exists():
+            return JsonResponse(
+                {"error": "That username is already taken"},
+                status=400,
+            )
+
+        if User.objects.filter(email=email).exists():
+            return JsonResponse(
+                {"error": "That email is already registered"},
+                status=400,
+            )
 
         user = User.objects.create_user(
-
-            username=data["username"],
-
-            email=data["email"],
-
-            password=data["password"]
-
+            username=username,
+            email=email,
+            password=password,
         )
 
         return JsonResponse({
-
             "message": "Registration Successful"
-
         })
 
     return JsonResponse({
 
         "error": "Invalid Request"
 
-    })
+    }, status=405)
 
 
 
@@ -68,7 +87,10 @@ def login_user(request):
 
     if request.method == "POST":
 
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
         username = data.get("username")
         password = data.get("password")
@@ -105,7 +127,10 @@ def chat(request):
             status=405
         )
 
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
     message = data.get("message", "").lower()
 
@@ -139,7 +164,10 @@ def chatbot(request):
             "reply": "Invalid request."
         })
 
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
     message = data.get("message", "")
 
