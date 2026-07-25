@@ -9,7 +9,7 @@ function Orders() {
     useEffect(() => {
 
         axios
-            .get("http://127.0.0.1:8000/api/orders/")
+            .get("https://ecommerce-7jru.onrender.com/api/orders/")
             .then((res) => setOrders(res.data));
 
     }, []);

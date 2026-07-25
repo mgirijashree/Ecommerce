@@ -7,8 +7,8 @@ function TrackOrder({ userEmail }) {
   useEffect(() => {
     // Fetch orders from your Django backend API
     const url = userEmail 
-      ? `http://127.0.0.1:8000/api/orders/?email=${userEmail}`
-      : `http://127.0.0.1:8000/api/orders/`;
+      ? `https://ecommerce-7jru.onrender.com/api/orders/?email=${userEmail}`
+      : `https://ecommerce-7jru.onrender.com/api/orders/`;
 
     fetch(url)
       .then((res) => res.json())

@@ -22,7 +22,7 @@ function AdminDashboard() {
         try {
 
             const response = await axios.get(
-                "http://127.0.0.1:8000/api/admin/dashboard/"
+                "https://ecommerce-7jru.onrender.com/api/admin/dashboard/"
             );
 
             setDashboard(response.data);
@@ -43,7 +43,7 @@ function AdminDashboard() {
         try {
 
             const response = await axios.get(
-                "http://127.0.0.1:8000/api/admin/orders/"
+                "https://ecommerce-7jru.onrender.com/api/admin/orders/"
             );
 
             setOrders(response.data);
@@ -74,7 +74,7 @@ function AdminDashboard() {
         try {
 
             await axios.put(
-                `http://127.0.0.1:8000/api/admin/orders/${id}/`,
+                `https://ecommerce-7jru.onrender.com/api/admin/orders/${id}/`,
                 {
                     status: status
                 }

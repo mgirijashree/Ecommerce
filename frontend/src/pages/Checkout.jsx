@@ -134,7 +134,7 @@ function Checkout() {
 
             const paymentResponse = await axios.post(
 
-                "http://127.0.0.1:8000/api/payment/create/",
+                "https://ecommerce-7jru.onrender.com/api/payment/create/",
 
                 {
                     amount: total
@@ -288,7 +288,7 @@ function Checkout() {
         try {
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/api/orders/",
+                "https://ecommerce-7jru.onrender.com/api/orders/",
                 orderData
             );
 

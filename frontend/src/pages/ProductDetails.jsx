@@ -33,7 +33,7 @@ export default function ProductDetails() {
   const image =
     product.image?.startsWith("http")
       ? product.image
-      : `http://127.0.0.1:8000${product.image}`;
+      : `https://ecommerce-7jru.onrender.com${product.image}`;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">

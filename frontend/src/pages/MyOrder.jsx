@@ -11,7 +11,7 @@ function TrackOrder() {
     useEffect(() => {
 
         axios.get(
-            `http://127.0.0.1:8000/api/orders/${id}/`
+            `https://ecommerce-7jru.onrender.com/api/orders/${id}/`
         )
             .then(res => setOrder(res.data));
 
