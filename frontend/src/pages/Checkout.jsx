@@ -294,6 +294,25 @@ function Checkout() {
 
             setOrderId(response.data.id);
 
+            try {
+                const saved = JSON.parse(
+                    localStorage.getItem("myOrders") || "[]"
+                );
+
+                const updated = [
+                    {
+                        id: response.data.id,
+                        email: form.email,
+                        date: new Date().toISOString(),
+                    },
+                    ...saved.filter((o) => o.id !== response.data.id),
+                ].slice(0, 20);
+
+                localStorage.setItem("myOrders", JSON.stringify(updated));
+            } catch (e) {
+                console.log("Could not save order locally:", e);
+            }
+
             localStorage.removeItem("cart");
             setCart([]);
             setShowSuccess(true);
