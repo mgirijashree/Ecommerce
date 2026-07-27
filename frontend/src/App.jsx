@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import Orders from "./pages/Orders";
 import ChatBot from "./components/ChatBot";
 import TrackOrder from "./pages/TrackOrder";
+import TrackOrderSearch from "./pages/TrackOrderSearch";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/track-order" element={<TrackOrderSearch />} />
           <Route path="/track-order/:id" element={<TrackOrder />} />
 
 

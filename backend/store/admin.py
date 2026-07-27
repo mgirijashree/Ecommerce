@@ -4,7 +4,8 @@ from .models import (
     Category,
     Product,
     Order,
-    OrderItem
+    OrderItem,
+    ContactMessage
 )
 
 
@@ -68,3 +69,36 @@ class OrderItemInline(admin.TabularInline):
         "price",
     )
 
+
+# ==========================
+# Contact Message Admin
+# ==========================
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "id",
+        "name",
+        "email",
+        "subject",
+        "created_at",
+        "email_sent",
+        "sms_sent",
+    )
+
+    list_filter = (
+        "email_sent",
+        "sms_sent",
+        "created_at",
+    )
+
+    search_fields = (
+        "name",
+        "email",
+        "subject",
+    )
+
+    readonly_fields = (
+        "created_at",
+    )

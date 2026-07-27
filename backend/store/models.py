@@ -137,6 +137,32 @@ class Order(models.Model):
 
 
 # ==========================
+# Contact Message Model
+# ==========================
+
+class ContactMessage(models.Model):
+
+    name = models.CharField(max_length=150)
+
+    email = models.EmailField()
+
+    phone = models.CharField(max_length=20, blank=True, null=True)
+
+    subject = models.CharField(max_length=200, blank=True, null=True)
+
+    message = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    email_sent = models.BooleanField(default=False)
+
+    sms_sent = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} ({self.email}) - {self.subject or 'No subject'}"
+
+
+# ==========================
 # Order Item Model
 # ==========================
 class OrderItem(models.Model):

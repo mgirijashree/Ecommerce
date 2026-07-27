@@ -166,3 +166,34 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 RAZORPAY_KEY_ID="rzp_test_THpgPkDTGWvi5t"
 RAZORPAY_KEY_SECRET="8yDl4UGAdI97SzLF38Ez548n"
+
+
+# ==========================
+# Email (contact form confirmation)
+# ==========================
+# If EMAIL_HOST_USER / EMAIL_HOST_PASSWORD are set on Render (or in .env
+# locally), real emails are sent via SMTP. Otherwise emails are printed to
+# the console/logs so the app never crashes when email isn't configured yet.
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "no-reply@happyaccessories.com")
+
+
+# ==========================
+# SMS (contact form confirmation) via Twilio
+# ==========================
+# Optional - if these three are not set, SMS confirmation is simply skipped.
+
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "")

@@ -49,6 +49,13 @@ urlpatterns = [
     ),
 
 
+    path(
+        "api/contact/",
+        views.contact_submit,
+        name="contact-submit"
+    ),
+
+
     # Product APIs
 
     path(

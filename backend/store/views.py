@@ -5,8 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .chatbot import build_database_context
 from .search import search_products, product_context
 from .ai import ask_ai
-from .models import Product, Order
+from .models import Product, Order, ContactMessage
 from django.shortcuts import render
+from django.core.mail import send_mail
 from rest_framework.response import Response
 from .serializers import ProductSerializer, OrderSerializer
 import razorpay
@@ -143,29 +144,11 @@ def chat(request):
     except (json.JSONDecodeError, UnicodeDecodeError):
         return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
-    message = data.get("message", "").lower()
+    message = data.get("message", "")
 
-    if "ring" in message:
-        reply = "We have Gold Rings, Diamond Rings and Wedding Rings."
+    result = ask_ai(message)
 
-    elif "necklace" in message:
-        reply = "We offer Gold Necklaces, Diamond Necklaces and Bridal Sets."
-
-    elif "bracelet" in message:
-        reply = "Our bracelet collection includes Gold, Silver and Diamond bracelets."
-
-    elif "category" in message:
-        reply = "Our categories include Rings, Earrings, Necklaces, Bracelets and Pendants."
-
-    elif "hello" in message or "hi" in message:
-        reply = "Hello 👋 Welcome to Elegant Jewellery Store. How may I help you?"
-
-    else:
-        reply = "Sorry, that information is not available on this website."
-
-    return JsonResponse({
-        "reply": reply
-    })
+    return JsonResponse(result)
 
 
 @csrf_exempt
@@ -181,42 +164,36 @@ def chatbot(request):
 
     try:
 
-        data=json.loads(request.body)
+        data = json.loads(request.body)
 
-        message=data.get(
+        message = data.get(
             "message",
             ""
         )
 
+        if not message.strip():
+            return JsonResponse({
+                "reply": "Please type a message so I can help you.",
+                "action": "none",
+                "path": None,
+                "search": None,
+                "items": [],
+            })
 
-        products = search_products(
-            message
-        )
+        result = ask_ai(message)
 
-
-        context = product_context(
-            products
-        )
-
-
-        reply = ask_ai(
-            message,
-            context
-        )
-
-
-        return JsonResponse(
-            {
-                "reply":reply
-            }
-        )
-
+        return JsonResponse(result)
 
     except Exception as e:
 
         return JsonResponse(
             {
-                "error":str(e)
+                "reply": "Sorry, something went wrong on our end. Please try again.",
+                "action": "none",
+                "path": None,
+                "search": None,
+                "items": [],
+                "error": str(e),
             },
             status=500
         )
@@ -350,27 +327,6 @@ def track_order(request, pk):
         )
 
     return Response({
-        "id": order.id,
-        "customer": order.full_name,
-        "status": order.status,
-        "payment": order.payment_method,
-        "total": order.grand_total,
-        "date": order.order_date,
-    })
-
-
-@api_view(["GET"])
-def track_order(request, pk):
-
-    try:
-        order = Order.objects.get(pk=pk)
-    except Order.DoesNotExist:
-        return Response(
-            {"error": "Order not found"},
-            status=404
-        )
-
-    return Response({
 
         "id": order.id,
 
@@ -430,3 +386,118 @@ def order_list(request):
 
     return Response(data)
 
+
+@csrf_exempt
+def contact_submit(request):
+
+    if request.method != "POST":
+        return JsonResponse(
+            {"error": "POST request required"},
+            status=405
+        )
+
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({"error": "Invalid JSON body"}, status=400)
+
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip()
+    phone = (data.get("phone") or "").strip()
+    subject = (data.get("subject") or "").strip()
+    message = (data.get("message") or "").strip()
+
+    errors = {}
+
+    if not name:
+        errors["name"] = "Name is required"
+
+    if not email:
+        errors["email"] = "Email is required"
+
+    if not message:
+        errors["message"] = "Message is required"
+
+    if errors:
+        return JsonResponse({"errors": errors}, status=400)
+
+    contact = ContactMessage.objects.create(
+        name=name,
+        email=email,
+        phone=phone,
+        subject=subject,
+        message=message,
+    )
+
+    email_sent = _send_contact_confirmation_email(contact)
+    sms_sent = _send_contact_confirmation_sms(contact)
+
+    contact.email_sent = email_sent
+    contact.sms_sent = sms_sent
+    contact.save(update_fields=["email_sent", "sms_sent"])
+
+    return JsonResponse({
+        "message": "Thank you for reaching out! Our team will get back to you shortly.",
+        "email_sent": email_sent,
+        "sms_sent": sms_sent,
+    })
+
+
+def _send_contact_confirmation_email(contact):
+    """Send a confirmation email to the customer. Fails silently
+    (returns False) if email is not configured, so the contact form
+    submission never breaks because of a missing SMTP setup."""
+
+    try:
+        send_mail(
+            subject="We've received your message - Happy Accessories",
+            message=(
+                f"Hi {contact.name},\n\n"
+                "Thank you for contacting Happy Accessories! We've received your "
+                "message and our team will get back to you within 24 hours.\n\n"
+                f"Your message:\n\"{contact.message}\"\n\n"
+                "Warm regards,\nHappy Accessories Team"
+            ),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+            recipient_list=[contact.email],
+            fail_silently=False,
+        )
+        return True
+
+    except Exception:
+        return False
+
+
+def _send_contact_confirmation_sms(contact):
+    """Send a confirmation SMS via Twilio if credentials are configured
+    in the environment. If Twilio isn't installed or credentials are
+    missing, this simply skips SMS instead of failing the request."""
+
+    if not contact.phone:
+        return False
+
+    account_sid = getattr(settings, "TWILIO_ACCOUNT_SID", None)
+    auth_token = getattr(settings, "TWILIO_AUTH_TOKEN", None)
+    from_number = getattr(settings, "TWILIO_FROM_NUMBER", None)
+
+    if not (account_sid and auth_token and from_number):
+        return False
+
+    try:
+        from twilio.rest import Client
+
+        client = Client(account_sid, auth_token)
+
+        client.messages.create(
+            body=(
+                f"Hi {contact.name}, thanks for contacting Happy Accessories! "
+                "Our team will get back to you shortly."
+            ),
+            from_=from_number,
+            to=contact.phone,
+        )
+
+        return True
+
+    except Exception:
+        return False
