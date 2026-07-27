@@ -66,6 +66,13 @@ urlpatterns = [
 
 
     path(
+    "api/categories/",
+    views.category_list,
+    name="category-list"
+    ),
+
+
+    path(
     "api/products/<int:pk>/",
     ProductDetailView.as_view(),
     name="product-detail"

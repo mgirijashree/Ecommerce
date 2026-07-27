@@ -1,14 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
-const categories = [
-  "Rings",
-  "Earrings",
-  "Bracelets",
-  "Bangles",
-  "Necklaces",
-  "Hoops",
-];
+import api from "../services/api";
 
 const container = {
   hidden: {},
@@ -24,7 +17,36 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45 } },
 };
 
+function SkeletonPill() {
+  return (
+    <div className="bg-white rounded-2xl shadow-md p-8 text-center animate-pulse">
+      <div className="w-12 h-12 mx-auto bg-gray-200 rounded-full mb-4" />
+      <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto" />
+    </div>
+  );
+}
+
 export default function CategorySection() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get("categories/")
+      .then((res) => {
+        setCategories(Array.isArray(res.data) ? res.data : []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("Category fetch error:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (!loading && categories.length === 0) {
+    return null;
+  }
+
   return (
     <section className="max-w-7xl mx-auto py-20 px-6">
       <motion.h2
@@ -37,36 +59,50 @@ export default function CategorySection() {
         Shop By Category
       </motion.h2>
 
-      <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.2 }}
-        className="grid md:grid-cols-3 lg:grid-cols-6 gap-6"
-      >
-        {categories.map((cat) => (
-          <motion.div key={cat} variants={item}>
-            <Link to={`/shop?category=${encodeURIComponent(cat)}`}>
-              <motion.div
-                whileHover={{ y: -6, scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                className="bg-white rounded-2xl shadow-md p-8 text-center hover:shadow-xl transition-shadow"
-              >
+      {loading ? (
+        <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonPill key={i} />
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          className="grid md:grid-cols-3 lg:grid-cols-6 gap-6"
+        >
+          {categories.map((cat) => (
+            <motion.div key={cat.id} variants={item}>
+              <Link to={`/shop?category=${encodeURIComponent(cat.name)}`}>
                 <motion.div
-                  className="text-5xl mb-4"
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.5 }}
+                  whileHover={{ y: -6, scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  className="bg-white rounded-2xl shadow-md p-8 text-center hover:shadow-xl transition-shadow"
                 >
-                  💎
-                </motion.div>
+                  <motion.div
+                    className="text-5xl mb-4"
+                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    💎
+                  </motion.div>
 
-                <h3 className="font-semibold">{cat}</h3>
-              </motion.div>
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
+                  <h3 className="font-semibold">{cat.name}</h3>
+
+                  {typeof cat.product_count === "number" && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      {cat.product_count} items
+                    </p>
+                  )}
+                </motion.div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 }

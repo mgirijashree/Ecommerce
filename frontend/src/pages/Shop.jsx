@@ -40,6 +40,7 @@ export default function Shop() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [categoryList, setCategoryList] = useState([]);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -67,6 +68,15 @@ export default function Shop() {
       });
   }, []);
 
+  // Fetch the real category list from the backend, so the filter dropdown
+  // (and the homepage category cards) always match actual product data.
+  useEffect(() => {
+    api
+      .get("categories/")
+      .then((res) => setCategoryList(Array.isArray(res.data) ? res.data : []))
+      .catch((err) => console.log("Category fetch error:", err));
+  }, []);
+
   // Keep local state in sync if the URL changes (e.g. a category card on
   // the homepage, or the AI Assistant, navigates here with new params).
   useEffect(() => {
@@ -75,15 +85,17 @@ export default function Shop() {
     setSort(searchParams.get("sort") || "default");
   }, [searchParams]);
 
-  // Build the category list dynamically from the actual product data, so
-  // it always matches real category names instead of a hardcoded guess.
+  // Prefer the dedicated categories endpoint; fall back to deriving names
+  // from the loaded products if that request hasn't resolved yet/failed.
   const categories = useMemo(() => {
-    const names = products
-      .map((p) => p.category?.name)
-      .filter(Boolean);
+    if (categoryList.length > 0) {
+      return ["All", ...categoryList.map((c) => c.name)];
+    }
+
+    const names = products.map((p) => p.category?.name).filter(Boolean);
 
     return ["All", ...Array.from(new Set(names)).sort()];
-  }, [products]);
+  }, [categoryList, products]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];

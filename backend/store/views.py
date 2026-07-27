@@ -5,11 +5,11 @@ from django.views.decorators.csrf import csrf_exempt
 from .chatbot import build_database_context
 from .search import search_products, product_context
 from .ai import ask_ai
-from .models import Product, Order, ContactMessage
+from .models import Product, Order, ContactMessage, Category
 from django.shortcuts import render
 from django.core.mail import send_mail
 from rest_framework.response import Response
-from .serializers import ProductSerializer, OrderSerializer
+from .serializers import ProductSerializer, OrderSerializer, CategorySerializer
 import razorpay
 from django.conf import settings
 
@@ -42,6 +42,31 @@ def product_list(request):
     )
 
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+def category_list(request):
+    """Returns every category, along with how many available products it
+    has, so the frontend never has to hardcode/guess category names."""
+
+    categories = Category.objects.all().order_by("name")
+
+    data = []
+
+    for cat in categories:
+        product_count = Product.objects.filter(
+            category=cat,
+            available=True
+        ).count()
+
+        data.append({
+            "id": cat.id,
+            "name": cat.name,
+            "slug": cat.slug,
+            "product_count": product_count,
+        })
+
+    return Response(data)
 
 
 @csrf_exempt
